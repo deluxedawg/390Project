@@ -39,9 +39,12 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.constraintlayout)
     implementation(libs.material)
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
+    androidTestImplementation("androidx.room:room-testing:2.6.1")
     // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:34.15.0"))
 
