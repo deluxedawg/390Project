@@ -1,11 +1,15 @@
-public class Session {
+package com.team5.reflextrainer;
+
+import java.util.Date;
+
+public class SessionCls {
     private double avgReactionTime;
     private double bestReactionTime;
     private double improvement;
     private int mistakes;
     private Date sessionDate;
 
-    public Session() {
+    public SessionCls() {
         this.avgReactionTime = 0.0;
         this.bestReactionTime = 0.0;
         this.improvement = 0.0;
@@ -13,7 +17,7 @@ public class Session {
         this.sessionDate = new Date();
     }
 
-    public Session(double avgReactionTime, double bestReactionTime, double improvement, int mistakes, Date sessionDate) {
+    public SessionCls(double avgReactionTime, double bestReactionTime, double improvement, int mistakes, Date sessionDate) {
         this.avgReactionTime = avgReactionTime;
         this.bestReactionTime = bestReactionTime;
         this.improvement = improvement;
