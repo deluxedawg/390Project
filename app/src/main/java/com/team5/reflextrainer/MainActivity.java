@@ -30,5 +30,13 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
         });
+
+        Button startTraining = findViewById(R.id.btnStartTraining);
+        startTraining.setOnClickListener(v ->
+                startActivity(new Intent(this, TrainingActivity.class)));
+
+        Button viewHistory = findViewById(R.id.btnViewHistory);
+        viewHistory.setOnClickListener(v ->
+                startActivity(new Intent(this, HistoryActivity.class)));
     }
 }
