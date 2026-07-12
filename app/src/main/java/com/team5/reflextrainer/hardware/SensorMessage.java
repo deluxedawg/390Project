@@ -18,7 +18,7 @@ public class SensorMessage {
     public static final byte MSG_RESET           = 0x02;
 
     // ---- Targets ----
-    public static final byte TARGET_SHAKE_IMU = 0x68;
+    public static final byte TARGET_SHAKE_IMU = (byte) 0xFF;
 
     // ---- Responses (ESP32 -> App) ----
     public static final byte RESP_RESULT = (byte) 0x81;
@@ -49,24 +49,30 @@ public class SensorMessage {
      */
     public static SensorMessage parse(byte[] bytes) {
         // wrong length -> reject
-        if (bytes == null || bytes.length != MESSAGE_LENGTH) return null;
+        if (bytes == null || bytes.length < 4) return null;
         // wrong start byte -> not a valid frame
         if (bytes[0] != START_BYTE) return null;
 
         byte response = bytes[1];
-        byte targetId = bytes[2];
-        int  timeLo   = bytes[3] & 0xFF;   // mask to treat as unsigned 0..255
-        int  timeHi   = bytes[4] & 0xFF;
-        byte checksum = bytes[5];
 
-        // little-endian reassembly of the 2-byte time value
-        int reactionTime = (timeHi << 8) | timeLo;
-
-        // ---- checksum validation (CONFIRM formula with Arran) ----
-        byte computed = computeChecksum(bytes[0], bytes[1], bytes[2], bytes[3], bytes[4]);
-        if (computed != checksum) return null;   // corrupted -> reject
-
-        return new SensorMessage(response, targetId, reactionTime);
+        if (response == RESP_ACK && bytes.length == 4) {
+            byte targetId = bytes[2];
+            byte checksum = bytes[3];
+            byte computed = (byte) (response ^ targetId);
+            if (computed != checksum) return null;
+            return new SensorMessage(response, targetId, -1);
+        }
+        if (response == RESP_RESULT && bytes.length == 6){
+            byte outcome = bytes[2];
+            int timeLo = bytes[3];
+            int timeHi = bytes[4];
+            byte checksum = bytes[5];
+            int reactionTime = (timeHi << 8) | timeLo;
+            byte computed = (byte) (response ^ outcome ^ bytes[3] ^ bytes[4]);
+            if (computed != checksum) return null;
+            return new SensorMessage(response,outcome,reactionTime);
+        }
+     return null;
     }
 
     /**
@@ -78,7 +84,7 @@ public class SensorMessage {
     public static byte[] buildChallenge(byte msgType, byte targetId, int timeoutMs) {
         byte timeoutLo = (byte) (timeoutMs & 0xFF);
         byte timeoutHi = (byte) ((timeoutMs >> 8) & 0xFF);
-        byte checksum  = computeChecksum(START_BYTE, msgType, targetId, timeoutLo, timeoutHi);
+        byte checksum  = computeChecksum(msgType, targetId, timeoutLo, timeoutHi);
         return new byte[]{ START_BYTE, msgType, targetId, timeoutLo, timeoutHi, checksum };
     }
 
@@ -92,7 +98,7 @@ public class SensorMessage {
      * >>> CONFIRM WITH ARRAN that the ESP32 uses this exact formula. <
      * If his firmware uses a sum-mod-256 or CRC instead, change ONLY this method.
      */
-    private static byte computeChecksum(byte b0, byte b1, byte b2, byte b3, byte b4) {
-        return (byte) (b0 ^ b1 ^ b2 ^ b3 ^ b4);
+    private static byte computeChecksum( byte b1, byte b2, byte b3, byte b4) {
+        return (byte) (b1 ^ b2 ^ b3 ^ b4);
     }
 }

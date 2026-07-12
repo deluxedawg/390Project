@@ -8,6 +8,8 @@
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
 .DS_Store
+firmware/reflex_trainer/build/
+firmware/reflex_trainer/sdkconfig.old
 /build
 /captures
 .externalNativeBuild

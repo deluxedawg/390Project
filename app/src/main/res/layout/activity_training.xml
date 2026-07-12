@@ -11,20 +11,36 @@
         android:layout_height="wrap_content"
         android:text="Training Screen"
         android:textSize="24sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 
     <TextView
+        android:id="@+id/tvInstruction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Coming soon"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"/>
+        android:text="Press Start to begin"
+        android:textSize="20sp"
+        android:layout_marginTop="24dp" />
+
+    <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="18sp"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/btnStartRound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Training"
+        android:layout_marginTop="24dp" />
 
     <Button
         android:id="@+id/btnBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Back to Home"
-        android:layout_marginTop="24dp"/>
+        android:layout_marginTop="24dp"
+        android:text="Back to Home" />
 
 </LinearLayout>
