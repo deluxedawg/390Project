@@ -63,14 +63,20 @@ public class SensorMessage {
             return new SensorMessage(response, targetId, -1);
         }
         if (response == RESP_RESULT && bytes.length == 6){
-            byte outcome = bytes[2];
-            int timeLo = bytes[3];
-            int timeHi = bytes[4];
+            byte outcome  = bytes[2];
+            byte timeLo   = bytes[3];
+            byte timeHi   = bytes[4];
             byte checksum = bytes[5];
-            int reactionTime = (timeHi << 8) | timeLo;
+
+            // Java bytes are SIGNED. Any byte above 0x7F sign-extends to a
+            // negative int when widened, so both must be masked with 0xFF
+            // before reassembly. Without the mask, a 400 ms reaction (0x0190,
+            // low byte 0x90) reconstructs as a large negative number.
+            int reactionTime = ((timeHi & 0xFF) << 8) | (timeLo & 0xFF);
+
             byte computed = (byte) (response ^ outcome ^ bytes[3] ^ bytes[4]);
             if (computed != checksum) return null;
-            return new SensorMessage(response,outcome,reactionTime);
+            return new SensorMessage(response, outcome, reactionTime);
         }
      return null;
     }
@@ -95,8 +101,8 @@ public class SensorMessage {
 
     /**
      * XOR checksum over the first five bytes.
-     * >>> CONFIRM WITH ARRAN that the ESP32 uses this exact formula. <
-     * If his firmware uses a sum-mod-256 or CRC instead, change ONLY this method.
+     * Confirmed against send_frame() in reflex_trainer.c: the ESP32 seeds the
+     * checksum with msg_type and XORs each payload byte into it.
      */
     private static byte computeChecksum( byte b1, byte b2, byte b3, byte b4) {
         return (byte) (b1 ^ b2 ^ b3 ^ b4);
