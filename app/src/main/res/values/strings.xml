@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">ReflexTrainer</string>
+    <string name="title_training_session">Training Session</string>
+    <string name="msg_session_in_progress">Session in progress&#8230;</string>
+    <string name="btn_stop_training">Stop Training &amp; Back to Home Screen</string>
+    <string name="btn_connected_devices">Previously Connected Devices</string>
+    <string name="btn_back_home">Back to Home Screen</string>
+    <string name="title_connected_devices">Previously Connected Devices</string>
+    <string name="msg_no_devices">No devices found.</string>
+    <string name="btn_start_training_session">START TRAINING SESSION</string>
+    <string name="title_history">Training History</string>
+    <string name="msg_no_history">No history found.</string>
+</resources>
