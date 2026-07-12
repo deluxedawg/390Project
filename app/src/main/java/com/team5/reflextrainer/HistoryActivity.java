@@ -9,7 +9,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.List;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.team5.reflextrainer.data.TrainingSessionRepository;
 
 public class HistoryActivity extends AppCompatActivity {
 
@@ -21,19 +23,31 @@ public class HistoryActivity extends AppCompatActivity {
         RecyclerView rvHistory = findViewById(R.id.rvHistory);
         TextView tvNoHistory = findViewById(R.id.tvNoHistory);
 
-        List<SessionCls> sessions = SessionManager.getInstance().getSessions();
-
-        if (sessions.isEmpty()) {
-            tvNoHistory.setVisibility(View.VISIBLE);
-            rvHistory.setVisibility(View.GONE);
-        } else {
-            tvNoHistory.setVisibility(View.GONE);
-            rvHistory.setVisibility(View.VISIBLE);
-            rvHistory.setLayoutManager(new LinearLayoutManager(this));
-            rvHistory.setAdapter(new HistoryAdapter(sessions));
-        }
-
         Button btnBackHome = findViewById(R.id.btnBackHome);
         btnBackHome.setOnClickListener(v -> finish());
+
+        rvHistory.setLayoutManager(new LinearLayoutManager(this));
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            tvNoHistory.setText("Not signed in.");
+            tvNoHistory.setVisibility(View.VISIBLE);
+            rvHistory.setVisibility(View.GONE);
+            return;
+        }
+
+        TrainingSessionRepository repository = new TrainingSessionRepository(this);
+
+        // DATA-1/DATA-3: load this user's sessions from the database
+        repository.getTrainingHistoryForUser(user.getUid(), sessions -> {
+            if (sessions.isEmpty()) {
+                tvNoHistory.setVisibility(View.VISIBLE);
+                rvHistory.setVisibility(View.GONE);
+            } else {
+                tvNoHistory.setVisibility(View.GONE);
+                rvHistory.setVisibility(View.VISIBLE);
+                rvHistory.setAdapter(new HistoryAdapter(sessions));
+            }
+        });
     }
 }

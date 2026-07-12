@@ -9,64 +9,29 @@ public class TrainingSession {
     private long sessionId;
 
     private String userId;
-    private int reactionTimeMs;
-    private String trainingMode;
-    private String difficulty;
+    private long durationMs;
+    private String status;        // "Completed" or "Terminated"
     private long timestamp;
 
-    public TrainingSession(String userId, int reactionTimeMs, String trainingMode, String difficulty, long timestamp) {
+    public TrainingSession(String userId, long durationMs, String status, long timestamp) {
         this.userId = userId;
-        this.reactionTimeMs = reactionTimeMs;
-        this.trainingMode = trainingMode;
-        this.difficulty = difficulty;
+        this.durationMs = durationMs;
+        this.status = status;
         this.timestamp = timestamp;
     }
 
-    public long getSessionId() {
-        return sessionId;
-    }
+    public long getSessionId() { return sessionId; }
+    public void setSessionId(long sessionId) { this.sessionId = sessionId; }
 
-    public void setSessionId(long sessionId) {
-        this.sessionId = sessionId;
-    }
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
 
-    public String getUserId() {
-        return userId;
-    }
+    public long getDurationMs() { return durationMs; }
+    public void setDurationMs(long durationMs) { this.durationMs = durationMs; }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public int getReactionTimeMs() {
-        return reactionTimeMs;
-    }
-
-    public void setReactionTimeMs(int reactionTimeMs) {
-        this.reactionTimeMs = reactionTimeMs;
-    }
-
-    public String getTrainingMode() {
-        return trainingMode;
-    }
-
-    public void setTrainingMode(String trainingMode) {
-        this.trainingMode = trainingMode;
-    }
-
-    public String getDifficulty() {
-        return difficulty;
-    }
-
-    public void setDifficulty(String difficulty) {
-        this.difficulty = difficulty;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
+    public long getTimestamp() { return timestamp; }
+    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
 }

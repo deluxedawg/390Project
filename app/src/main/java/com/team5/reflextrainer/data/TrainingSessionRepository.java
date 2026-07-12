@@ -1,6 +1,8 @@
 package com.team5.reflextrainer.data;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -9,6 +11,7 @@ import java.util.concurrent.Executors;
 public class TrainingSessionRepository {
     private final TrainingSessionDao trainingSessionDao;
     private final ExecutorService databaseExecutor;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public TrainingSessionRepository(Context context) {
         AppDatabase database = AppDatabase.getInstance(context);
@@ -16,24 +19,23 @@ public class TrainingSessionRepository {
         databaseExecutor = Executors.newSingleThreadExecutor();
     }
 
-    public void saveTrainingSession(String userId, int reactionTimeMs, String trainingMode, String difficulty) {
+    /** DATA-2: save a completed session for the given user. */
+    public void saveTrainingSession(String userId, long durationMs, String status) {
         TrainingSession session = new TrainingSession(
-                userId,
-                reactionTimeMs,
-                trainingMode,
-                difficulty,
-                System.currentTimeMillis()
-        );
-
+                userId, durationMs, status, System.currentTimeMillis());
         databaseExecutor.execute(() -> trainingSessionDao.insertTrainingSession(session));
     }
 
-    public List<TrainingSession> getTrainingHistory() {
-        return trainingSessionDao.getAllSessions();
+    public interface HistoryCallback {
+        void onResult(List<TrainingSession> sessions);
     }
 
-    public List<TrainingSession> getTrainingHistoryForUser(String userId) {
-        return trainingSessionDao.getSessionsForUser(userId);
+    /** DATA-1/DATA-3: read this user's sessions off the UI thread. */
+    public void getTrainingHistoryForUser(String userId, HistoryCallback callback) {
+        databaseExecutor.execute(() -> {
+            List<TrainingSession> sessions = trainingSessionDao.getSessionsForUser(userId);
+            mainHandler.post(() -> callback.onResult(sessions));
+        });
     }
 
     public void deleteTrainingSession(TrainingSession session) {

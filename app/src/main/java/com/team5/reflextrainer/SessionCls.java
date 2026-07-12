@@ -3,66 +3,29 @@ package com.team5.reflextrainer;
 import java.util.Date;
 
 public class SessionCls {
-    private double avgReactionTime;
-    private double bestReactionTime;
-    private double improvement;
-    private int mistakes;
+
+    private long durationMs;
+    private String status;      // "Completed" or "Terminated"
     private Date sessionDate;
 
     public SessionCls() {
-        this.avgReactionTime = 0.0;
-        this.bestReactionTime = 0.0;
-        this.improvement = 0.0;
-        this.mistakes = 0;
         this.sessionDate = new Date();
+        this.status = "Completed";
+        this.durationMs = 0L;
     }
 
-    public SessionCls(double avgReactionTime, double bestReactionTime, double improvement, int mistakes, Date sessionDate) {
-        this.avgReactionTime = avgReactionTime;
-        this.bestReactionTime = bestReactionTime;
-        this.improvement = improvement;
-        this.mistakes = mistakes;
+    public SessionCls(long durationMs, String status, Date sessionDate) {
+        this.durationMs = durationMs;
+        this.status = status;
         this.sessionDate = sessionDate;
     }
 
-    // Getters and Setters
-    public double getAvgReactionTime() {
-        return avgReactionTime;
-    }
+    public long getDurationMs() { return durationMs; }
+    public void setDurationMs(long durationMs) { this.durationMs = durationMs; }
 
-    public void setAvgReactionTime(double avgReactionTime) {
-        this.avgReactionTime = avgReactionTime;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public double getBestReactionTime() {
-        return bestReactionTime;
-    }
-
-    public void setBestReactionTime(double bestReactionTime) {
-        this.bestReactionTime = bestReactionTime;
-    }
-
-    public double getImprovement() {
-        return improvement;
-    }
-
-    public void setImprovement(double improvement) {
-        this.improvement = improvement;
-    }
-
-    public int getMistakes() {
-        return mistakes;
-    }
-
-    public void setMistakes(int mistakes) {
-        this.mistakes = mistakes;
-    }
-
-    public Date getSessionDate() {
-        return sessionDate;
-    }
-
-    public void setSessionDate(Date sessionDate) {
-        this.sessionDate = sessionDate;
-    }
+    public Date getSessionDate() { return sessionDate; }
+    public void setSessionDate(Date sessionDate) { this.sessionDate = sessionDate; }
 }
