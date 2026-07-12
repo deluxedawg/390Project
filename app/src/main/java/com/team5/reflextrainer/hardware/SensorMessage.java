@@ -1,0 +1,90 @@
+package com.team5.reflextrainer.hardware;
+
+/**
+ * Parses and builds the 6-byte messages exchanged with the ESP32 reflex sensor.
+ *
+ * App   -> ESP32: [START_BYTE][msgType ][targetId][timeout_lo][timeout_hi][checksum]
+ * ESP32 -> App:   [START_BYTE][response][targetId][time_lo   ][time_hi   ][checksum]
+ *
+ * Protocol defined by the hardware team. Constants MUST match the ESP32 firmware.
+ */
+public class SensorMessage {
+
+    // ---- Framing ----
+    public static final byte START_BYTE = (byte) 0xAA;
+
+    // ---- Message types (App -> ESP32) ----
+    public static final byte MSG_START_CHALLENGE = 0x01;
+    public static final byte MSG_RESET           = 0x02;
+
+    // ---- Targets ----
+    public static final byte TARGET_SHAKE_IMU = 0x68;
+
+    // ---- Responses (ESP32 -> App) ----
+    public static final byte RESP_RESULT = (byte) 0x81;
+    public static final byte RESP_ACK    = (byte) 0x82;
+
+    // ---- Outcomes ----
+    public static final byte OUTCOME_CORRECT   = 0x00;
+    public static final byte OUTCOME_WRONG_BTN = 0x01;
+    public static final byte OUTCOME_TIMEOUT   = 0x02;
+
+    public static final int MESSAGE_LENGTH = 6;
+
+    // ---- Parsed fields ----
+    public final byte response;
+    public final byte targetId;
+    public final int  reactionTimeMs;
+
+    private SensorMessage(byte response, byte targetId, int reactionTimeMs) {
+        this.response = response;
+        this.targetId = targetId;
+        this.reactionTimeMs = reactionTimeMs;
+    }
+
+    /**
+     * Parse a 6-byte response from the ESP32.
+     * @return a SensorMessage, or null if the packet is invalid/corrupted (HW-3.3 / HW-5).
+     */
+    public static SensorMessage parse(byte[] bytes) {
+        if (bytes == null || bytes.length != MESSAGE_LENGTH) return null;
+        if (bytes[0] != START_BYTE) return null;
+
+        byte response = bytes[1];
+        byte targetId = bytes[2];
+        int  timeLo   = bytes[3] & 0xFF;
+        int  timeHi   = bytes[4] & 0xFF;
+        byte checksum = bytes[5];
+
+        // little-endian reassembly of the 2-byte time value
+        int reactionTime = (timeHi << 8) | timeLo;
+
+        // NOTE: confirm this formula matches the ESP32 firmware.
+        byte computed = computeChecksum(bytes[0], bytes[1], bytes[2], bytes[3], bytes[4]);
+        if (computed != checksum) return null;   // corrupted -> reject
+
+        return new SensorMessage(response, targetId, reactionTime);
+    }
+
+    /** Build a 6-byte challenge to SEND to the ESP32. */
+    public static byte[] buildChallenge(byte msgType, byte targetId, int timeoutMs) {
+        byte timeoutLo = (byte) (timeoutMs & 0xFF);
+        byte timeoutHi = (byte) ((timeoutMs >> 8) & 0xFF);
+        byte checksum  = computeChecksum(START_BYTE, msgType, targetId, timeoutLo, timeoutHi);
+        return new byte[]{ START_BYTE, msgType, targetId, timeoutLo, timeoutHi, checksum };
+    }
+
+    /** Convenience: a RESET message. */
+    public static byte[] buildReset() {
+        return buildChallenge(MSG_RESET, (byte) 0x00, 0);
+    }
+
+    /**
+     * XOR checksum over the first five bytes.
+     * Confirmed with hardware team: matches the ESP32 firmware.
+     * Time/timeout fields are little-endian (low byte first, then high).
+     */
+    private static byte computeChecksum(byte b0, byte b1, byte b2, byte b3, byte b4) {
+        return (byte) (b0 ^ b1 ^ b2 ^ b3 ^ b4);
+    }
+}
