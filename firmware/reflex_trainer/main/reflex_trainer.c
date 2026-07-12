@@ -35,22 +35,33 @@ static const int button_pins[NUM_BUTTONS] = {34,35,36,39};
 static const int led_pins[NUM_BUTTONS] = {27, 14, 12, 13}; 
 static const char *TAG = "REFLEX";
 static volatile uint8_t current_target = 0xFE;
-static int64_t challenge_start_us = 0;
+static volatile int64_t challenge_start_us = 0;
 static volatile bool round_active = false;
 static uint32_t spp_handle = 0;
 
 static QueueHandle_t gpio_evt_queue = NULL;
 static esp_timer_handle_t timeout_timer = NULL;
 
+/*
+ * FIX: the original assigned esp_timer_get_time() to a local variable, which
+ * was immediately discarded. challenge_start_us therefore stayed at 0 for the
+ * lifetime of the program, and elapsed_ms() returned time-since-boot rather
+ * than reaction time.
+ */
 static void start_round_timer(void) {
-	int64_t time_us = esp_timer_get_time();
+	challenge_start_us = esp_timer_get_time();
 	round_active = true;
 }
 
 static uint16_t elapsed_ms(void) {
-	int64_t time_us = esp_timer_get_time() - challenge_start_us;
+	int64_t delta_us = esp_timer_get_time() - challenge_start_us;
 	round_active = false;
-	return (uint16_t)(time_us / 1000);
+
+	/* Clamp so a wrap can never masquerade as a fast reaction. */
+	if (delta_us < 0) return 0;
+	int64_t ms = delta_us / 1000;
+	if (ms > 0xFFFF) ms = 0xFFFF;
+	return (uint16_t) ms;
 }
 
 //SPP 
@@ -99,13 +110,19 @@ static void begin_challenge(uint8_t target, uint16_t timeout_ms) {
 	if (target < NUM_BUTTONS) {
 		gpio_set_level(led_pins[target], 1);
 	}
-	start_round_timer();
+
+	/*
+	 * FIX: ACK is now sent BEFORE the timer starts, so the SPP transmit time
+	 * for the acknowledgement is not counted against the user's reaction.
+	 */
 	send_ack(target);
-	
+
 	if (timeout_timer) {
 		esp_timer_stop(timeout_timer);
 		esp_timer_start_once(timeout_timer, (uint64_t)timeout_ms * 1000ULL);
 	}
+
+	start_round_timer();
 }
 
 static void timeout_cb(void * arg) {
@@ -158,6 +175,11 @@ static void setup_buttons_and_leds(void) {
 		gpio_config(&led_conf);
 		gpio_set_level(led_pins[i], 0);
 		
+		/*
+		 * NOTE: GPIO 34-39 are input-only on the ESP32 and have NO internal
+		 * pull-up resistors. pull_up_en is ignored by the hardware on these
+		 * pins, so EXTERNAL 10k pull-ups to 3V3 are required.
+		 */
 		gpio_config_t btn_conf = {
 			.pin_bit_mask = (1ULL << button_pins[i]),
 			.mode = GPIO_MODE_INPUT,
@@ -242,7 +264,8 @@ static void handle_incoming_command(uint8_t *data, uint16_t len) {
 			end_round();
 			break;
 		default:
-			ESP_LOGW(TAG, "Unknown command type goober:", msg_type);
+			/* FIX: format string had an argument but no conversion specifier. */
+			ESP_LOGW(TAG, "Unknown command type 0x%02X", msg_type);
 			break;
 	}
 }
@@ -305,4 +328,3 @@ ESP_ERROR_CHECK(esp_spp_register_callback(esp_spp_cb));
 
     	ESP_LOGI(TAG, "Reflex Trainer ready and advertising as SPP device.");
 }
-	
