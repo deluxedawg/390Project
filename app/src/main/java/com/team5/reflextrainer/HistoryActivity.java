@@ -12,7 +12,7 @@ public class HistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        Button back = findViewById(R.id.btnBack);
+        Button back = findViewById(R.id.btnBackHome);
         back.setOnClickListener(v -> finish());
     }
 }

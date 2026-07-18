@@ -127,7 +127,12 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
             tvInstruction.setText("Press Start for the next round");
             btnStartRound.setEnabled(true);
 
-            sessionRepository.saveTrainingSession(currentUserId,message.reactionTimeMs,TRAINING_MODE,DIFFICULTY);
+            sessionRepository.saveTrainingSession(currentUserId, message.reactionTimeMs, TRAINING_MODE, DIFFICULTY);
+
+            // leaderboard: only rank successful reactions
+            if (message.targetId == SensorMessage.OUTCOME_CORRECT) {
+                new LeaderboardManager().submitScore(message.reactionTimeMs);
+            }
         }
     }
 

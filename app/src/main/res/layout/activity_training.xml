@@ -4,43 +4,53 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="24dp">
+    android:background="@color/bg"
+    android:padding="28dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Training Screen"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:text="ACTIVE SESSION"
+        android:textColor="@color/text_secondary"
+        android:textSize="13sp"
+        android:letterSpacing="0.15"/>
 
     <TextView
         android:id="@+id/tvInstruction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Press Start to begin"
-        android:textSize="20sp"
-        android:layout_marginTop="24dp" />
+        android:textColor="@color/text_primary"
+        android:textSize="22sp"
+        android:gravity="center"
+        android:layout_marginTop="48dp"/>
 
     <TextView
         android:id="@+id/tvResult"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="18sp"
-        android:layout_marginTop="16dp" />
-
-    <Button
-        android:id="@+id/btnStartRound"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start Training"
-        android:layout_marginTop="24dp" />
-
-    <Button
-        android:id="@+id/btnBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:text="—"
+        android:textColor="@color/accent"
+        android:textSize="52sp"
+        android:textStyle="bold"
+        android:fontFamily="monospace"
+        android:gravity="center"
         android:layout_marginTop="24dp"
-        android:text="Back to Home" />
+        android:layout_marginBottom="48dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnStartRound"
+        style="@style/AppButton"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Start Training"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBack"
+        style="@style/AppButton.Outline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Back to Home"
+        android:layout_marginTop="12dp"/>
 
 </LinearLayout>

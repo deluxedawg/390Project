@@ -9,25 +9,34 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="HISTORY"
+        android:text="LEADERBOARD"
         android:textColor="@color/text_secondary"
         android:textSize="14sp"
         android:textStyle="bold"
         android:letterSpacing="0.15"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fastest reactions"
+        android:textColor="@color/text_primary"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginTop="2dp"
         android:layout_marginBottom="20dp"/>
 
     <TextView
-        android:id="@+id/tvNoHistory"
+        android:id="@+id/tvEmpty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="No sessions yet. Start training to see your results here."
+        android:text="No scores yet. Complete a round to get on the board."
         android:textColor="@color/text_secondary"
         android:textSize="16sp"
         android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvHistory"
+        android:id="@+id/rvLeaderboard"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
