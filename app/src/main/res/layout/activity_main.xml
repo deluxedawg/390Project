@@ -87,6 +87,16 @@
         android:layout_marginTop="12dp"/>
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnProfile"
+        style="@style/AppButton.Outline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Profile"
+        app:layout_constraintTop_toBottomOf="@id/btnLeaderboard"
+        android:layout_marginTop="12dp"/>
+
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogout"
         style="@style/AppButton.Outline"
         android:layout_width="wrap_content"

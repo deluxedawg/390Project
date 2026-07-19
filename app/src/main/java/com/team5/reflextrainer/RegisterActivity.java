@@ -17,7 +17,7 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
-    private EditText etEmail, etPassword, etConfirm;
+    private EditText etUsername, etEmail, etPassword, etConfirm;
     private ProgressBar progress;
 
     @Override
@@ -26,26 +26,32 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         auth = FirebaseAuth.getInstance();
+        etUsername = findViewById(R.id.etUsername);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         etConfirm = findViewById(R.id.etConfirm);
         progress = findViewById(R.id.progress);
 
         findViewById(R.id.btnRegister).setOnClickListener(v -> {
+            String username = etUsername.getText().toString().trim();
             String email = etEmail.getText().toString().trim();
             String pass = etPassword.getText().toString();
             String confirm = etConfirm.getText().toString();
 
-            if (validate(email, pass, confirm)) {
-                register(email, pass);
+            if (validate(username, email, pass, confirm)) {
+                register(username, email, pass);
             }
         });
     }
 
     // AUTH-1.3: validate before ever touching Firebase
-    private boolean validate(String email, String pass, String confirm) {
-        if (email.isEmpty() || pass.isEmpty()) {
+    private boolean validate(String username, String email, String pass, String confirm) {
+        if (username.isEmpty() || email.isEmpty() || pass.isEmpty()) {
             toast("Please fill in all fields");
+            return false;
+        }
+        if (username.length() < 3) {
+            toast("Username must be at least 3 characters");
             return false;
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
@@ -64,13 +70,16 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     // AUTH-1.2: create the account
-    private void register(String email, String pass) {
+    private void register(String username, String email, String pass) {
         progress.setVisibility(View.VISIBLE);
         auth.createUserWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(this, task -> {
                     progress.setVisibility(View.GONE);
                     if (task.isSuccessful()) {
-                        // created AND signed in automatically
+                        // account created AND signed in automatically
+                        String uid = auth.getCurrentUser().getUid();
+                        new ProfileManager().saveProfile(uid, username, email);
+
                         startActivity(new Intent(this, MainActivity.class));
                         finishAffinity(); // clear login/register from back stack
                     } else {
