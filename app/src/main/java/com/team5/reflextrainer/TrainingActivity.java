@@ -3,6 +3,7 @@ package com.team5.reflextrainer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -63,6 +64,7 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
     }
 
     private void startRound(){
+        Log.e("TRAINING_DEBUG", "startRound() called!"); // TEMP DEBUG LINE
         if(!ESPBluetoothManager.getInstance().isConnected()){
             tvInstruction.setText("Sensor not connected");
             return;

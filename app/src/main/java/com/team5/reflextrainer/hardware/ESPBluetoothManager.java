@@ -86,7 +86,7 @@ public class ESPBluetoothManager {
                     outputStream = connectedSocket.getOutputStream();
                     running = true;
                     if (listener != null) listener.onConnectionChanged(true,false);
-                    listenLoop();
+                    new Thread(this::listenLoop, "BT-Listen-Thread").start();
                 }   catch (IOException e) {
                     Log.e(TAG, "Failed to open streams", e);
                     if (listener != null) listener.onConnectionChanged(false, false);
@@ -129,10 +129,14 @@ public class ESPBluetoothManager {
     }
 
     public void send(byte[] frame){
-        if(outputStream == null) return;
+        if(outputStream == null) {
+            Log.e("BT_DEBUG", "outputStream is null, cannot send!"); // TEMP DEBUG
+            return;
+        }
         executor.execute(() ->{
             try {
                 outputStream.write(frame);
+                Log.e("BT_DEBUG", "Frame written successfully, " + frame.length + " bytes"); // TEMP DEBUG
             }catch (IOException e) {
                 Log.e(TAG, "Write failed", e);
             }
