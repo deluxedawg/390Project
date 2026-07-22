@@ -61,7 +61,11 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
 
         Button startTraining = findViewById(R.id.btnStart);
         startTraining.setOnClickListener(v ->
-                startActivity(new Intent(this, TrainingActivity.class)));
+                startActivity(new Intent(this, LevelSelectActivity.class)));
+
+        Button viewHistory = findViewById(R.id.btnViewHistory);
+        viewHistory.setOnClickListener(v ->
+                startActivity(new Intent(this, HistoryActivity.class)));
 
         Button leaderboard = findViewById(R.id.btnLeaderboard);
         leaderboard.setOnClickListener(v ->
@@ -108,14 +112,34 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
 
 
     private void connectToSensor() {
-        android.bluetooth.BluetoothManager systemBtManager = (android.bluetooth.BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-        BluetoothAdapter adapter = systemBtManager.getAdapter();
-        if (adapter == null || !adapter.isEnabled()) {
+        try {
+            android.bluetooth.BluetoothManager systemBtManager =
+                    (android.bluetooth.BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
+            BluetoothAdapter adapter = (systemBtManager != null) ? systemBtManager.getAdapter() : null;
+
+            if (adapter == null || !adapter.isEnabled()) {
+                updateSensorStatus(SensorStatus.DISCONNECTED);
+                return;
+            }
+
+            // double-check the connect permission is actually granted before touching bonded devices
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                    ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
+                            != PackageManager.PERMISSION_GRANTED) {
+                updateSensorStatus(SensorStatus.DISCONNECTED);
+                return;
+            }
+
+            updateSensorStatus(SensorStatus.CONNECTING);
+            ESPBluetoothManager.getInstance().connect(adapter);
+
+        } catch (SecurityException e) {
+            // permission missing or revoked at the OS level -> just show disconnected
             updateSensorStatus(SensorStatus.DISCONNECTED);
-            return;
+        } catch (Exception e) {
+            // any other Bluetooth failure (no adapter, emulator, etc.) -> disconnected, don't crash
+            updateSensorStatus(SensorStatus.DISCONNECTED);
         }
-        updateSensorStatus(SensorStatus.CONNECTING);
-        ESPBluetoothManager.getInstance().connect(adapter);
     }
 
     @Override

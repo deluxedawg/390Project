@@ -24,13 +24,14 @@
         android:label="Reflex Trainer"
         android:theme="@style/Theme.ReflexTrainer">
 
-        <activity android:name=".LoginActivity" android:exported="true">
+        <activity android:name=".SplashActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <activity android:name=".LoginActivity" android:exported="false" />
         <activity android:name=".RegisterActivity" android:exported="false" />
         <activity android:name=".MainActivity" android:exported="false" />
         <activity android:name=".TrainingActivity" android:exported="false" />
@@ -39,6 +40,8 @@
         <activity android:name=".ProfileActivity" android:exported="false" />
         <activity android:name=".AddFriendActivity" android:exported="false" />
         <activity android:name=".FriendsActivity" android:exported="false" />
+        <activity android:name=".LevelSelectActivity" android:exported="false" />
+        <activity android:name=".SummaryActivity" android:exported="false" />
 
     </application>
 </manifest>
