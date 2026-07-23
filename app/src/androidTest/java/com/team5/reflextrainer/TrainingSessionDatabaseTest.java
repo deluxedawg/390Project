@@ -41,14 +41,15 @@ public class TrainingSessionDatabaseTest {
 
     @Test
     public void insertAndReadTrainingSessions() {
+        // (userId, avgMs, bestMs, totalRounds, correctRounds, difficulty, timestamp)
         trainingSessionDao.insertTrainingSession(
-                new TrainingSession("test-user-1", 245, "Reaction Test", "Easy", 1000L)
+                new TrainingSession("test-user-1", 245, 210, 10, 9, "Easy", 1000L)
         );
         trainingSessionDao.insertTrainingSession(
-                new TrainingSession("test-user-1", 231, "Reaction Test", "Medium", 2000L)
+                new TrainingSession("test-user-1", 231, 198, 10, 10, "Medium", 2000L)
         );
         trainingSessionDao.insertTrainingSession(
-                new TrainingSession("test-user-2", 267, "Reaction Test", "Easy", 3000L)
+                new TrainingSession("test-user-2", 267, 240, 5, 4, "Easy", 3000L)
         );
 
         List<TrainingSession> allSessions = trainingSessionDao.getAllSessions();
@@ -56,12 +57,17 @@ public class TrainingSessionDatabaseTest {
 
         assertEquals(3, allSessions.size());
         assertEquals(2, userOneSessions.size());
-        assertEquals(231, userOneSessions.get(0).getReactionTimeMs());
+        // ordered by timestamp DESC, so the newest (2000L) comes first
+        assertEquals(231, userOneSessions.get(0).getAvgReactionMs());
+        assertEquals(198, userOneSessions.get(0).getBestReactionMs());
+        assertEquals(10, userOneSessions.get(0).getTotalRounds());
+        assertEquals(10, userOneSessions.get(0).getCorrectRounds());
     }
 
     @Test
     public void deleteAndClearTrainingSessions() {
-        TrainingSession session = new TrainingSession("test-user-1", 245, "Reaction Test", "Easy", 1000L);
+        TrainingSession session =
+                new TrainingSession("test-user-1", 245, 210, 10, 9, "Easy", 1000L);
         long sessionId = trainingSessionDao.insertTrainingSession(session);
         session.setSessionId(sessionId);
 
@@ -69,10 +75,10 @@ public class TrainingSessionDatabaseTest {
         assertEquals(0, trainingSessionDao.getAllSessions().size());
 
         trainingSessionDao.insertTrainingSession(
-                new TrainingSession("test-user-1", 231, "Reaction Test", "Medium", 2000L)
+                new TrainingSession("test-user-1", 231, 198, 10, 10, "Medium", 2000L)
         );
         trainingSessionDao.insertTrainingSession(
-                new TrainingSession("test-user-2", 267, "Reaction Test", "Easy", 3000L)
+                new TrainingSession("test-user-2", 267, 240, 5, 4, "Easy", 3000L)
         );
 
         trainingSessionDao.clearAllSessions();

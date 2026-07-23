@@ -1,5 +1,6 @@
 package com.team5.reflextrainer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -37,11 +38,16 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
 
     private int timeoutMs = 1000;
     private String difficulty = "Medium";
-    private int totalRounds = 10;               // how many rounds this session
+    private int totalRounds = 10;
+
+    // ---- challenge context ----
+    private String challengeId = null;            // playing an incoming challenge
+    private String challengeToUid = null;         // creating a new challenge
+    private String challengeToUsername = null;
 
     // ---- session state ----
-    private int currentRound = 0;               // 0-based index of the round in progress
-    private final List<Integer> reactionTimes = new ArrayList<>();  // correct-round times
+    private int currentRound = 0;
+    private final List<Integer> reactionTimes = new ArrayList<>();
     private int correctCount = 0;
 
     // ---- simulation state ----
@@ -59,12 +65,16 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
         if (difficulty == null) difficulty = "Medium";
         totalRounds = getIntent().getIntExtra(LevelSelectActivity.EXTRA_ROUNDS, 10);
 
+        challengeId = getIntent().getStringExtra("challengeId");
+        challengeToUid = getIntent().getStringExtra("challengeToUid");
+        challengeToUsername = getIntent().getStringExtra("challengeToUsername");
+
         Button back = findViewById(R.id.btnBack);
         back.setOnClickListener(v -> finish());
 
         tvInstruction = findViewById(R.id.tvInstruction);
         tvResult = findViewById(R.id.tvResult);
-        tvProgress = findViewById(R.id.tvProgress);   // NEW view — add to layout (below)
+        tvProgress = findViewById(R.id.tvProgress);
         btnStartRound = findViewById(R.id.btnStartRound);
         btnStartRound.setOnClickListener(v -> onStartPressed());
 
@@ -81,13 +91,19 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
         }
 
         tvProgress.setText(difficulty + " · " + totalRounds + " rounds");
-        tvInstruction.setText("Press Start to begin");
+
+        if (challengeToUsername != null) {
+            tvInstruction.setText("Challenging " + challengeToUsername + " — press Start");
+        } else if (challengeId != null) {
+            tvInstruction.setText("Challenge round — press Start");
+        } else {
+            tvInstruction.setText("Press Start to begin");
+        }
     }
 
     // ===================== session control =====================
 
     private void onStartPressed() {
-        // (re)start a fresh session
         currentRound = 0;
         correctCount = 0;
         reactionTimes.clear();
@@ -134,36 +150,81 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
         }
         tvResult.setText(outcomeText);
 
-        // brief pause, then auto-advance to the next round
         mainhandler.postDelayed(this::beginNextRound, 900);
     }
 
     private void finishSession() {
-        int best = Integer.MAX_VALUE;
+        int bestCalc = Integer.MAX_VALUE;
         int sum = 0;
         for (int t : reactionTimes) {
             sum += t;
-            if (t < best) best = t;
+            if (t < bestCalc) bestCalc = t;
         }
-        int avg = reactionTimes.isEmpty() ? 0 : sum / reactionTimes.size();
-        if (reactionTimes.isEmpty()) best = 0;
+        final int avg = reactionTimes.isEmpty() ? 0 : sum / reactionTimes.size();
+        final int best = reactionTimes.isEmpty() ? 0 : bestCalc;
 
-        // save one row for the whole session
         sessionRepository.saveSession(currentUserId, avg, best, totalRounds, correctCount, difficulty);
 
-        // submit the session average to the leaderboard (rewards consistency)
         if (avg > 0) {
             new LeaderboardManager().submitScore(avg);
         }
 
-        // hand the summary to the summary screen (Stage 3)
-        android.content.Intent i = new android.content.Intent(this, SummaryActivity.class);
+        // creating a new challenge -> send my score to the friend
+        if (challengeToUid != null && avg > 0) {
+            new ChallengeManager().sendChallenge(
+                    challengeToUid, challengeToUsername,
+                    difficulty, timeoutMs, totalRounds, avg,
+                    new ChallengeManager.ActionCallback() {
+                        @Override public void onDone() { }
+                        @Override public void onError(String m) { }
+                    });
+        }
+
+        // playing an incoming challenge -> wait for the outcome, then show the result screen
+        if (challengeId != null) {
+            tvInstruction.setText("Checking result...");
+            new ChallengeManager().completeChallengeWithResult(challengeId, avg,
+                    new ChallengeManager.ResultCallback() {
+                        @Override
+                        public void onResult(boolean won, boolean tie, int myScore,
+                                             int theirScore, String opponent) {
+                            Intent i = new Intent(TrainingActivity.this, ChallengeResultActivity.class);
+                            i.putExtra("won", won);
+                            i.putExtra("tie", tie);
+                            i.putExtra("myScore", myScore);
+                            i.putExtra("theirScore", theirScore);
+                            i.putExtra("opponent", opponent);
+                            i.putExtra("avg", avg);
+                            i.putExtra("best", best);
+                            i.putExtra("total", totalRounds);
+                            i.putExtra("correct", correctCount);
+                            i.putExtra("difficulty", difficulty);
+                            i.putIntegerArrayListExtra("rounds", new ArrayList<>(reactionTimes));
+                            startActivity(i);
+                            finish();
+                        }
+                        @Override
+                        public void onError(String m) {
+                            goToSummary(avg, best);
+                        }
+                    });
+            return;
+        }
+
+        goToSummary(avg, best);
+    }
+
+    private void goToSummary(int avg, int best) {
+        Intent i = new Intent(this, SummaryActivity.class);
         i.putExtra("avg", avg);
         i.putExtra("best", best);
         i.putExtra("total", totalRounds);
         i.putExtra("correct", correctCount);
         i.putExtra("difficulty", difficulty);
         i.putIntegerArrayListExtra("rounds", new ArrayList<>(reactionTimes));
+        if (challengeToUsername != null && avg > 0) {
+            i.putExtra("challengeSentTo", challengeToUsername);
+        }
         startActivity(i);
         finish();
     }

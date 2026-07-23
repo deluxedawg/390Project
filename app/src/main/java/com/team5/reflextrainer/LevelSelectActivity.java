@@ -15,10 +15,17 @@ public class LevelSelectActivity extends AppCompatActivity {
 
     private MaterialButtonToggleGroup toggleRounds;
 
+    // set when this screen was opened to start a challenge
+    private String challengeToUid;
+    private String challengeToUsername;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_level_select);
+
+        challengeToUid = getIntent().getStringExtra("challengeToUid");
+        challengeToUsername = getIntent().getStringExtra("challengeToUsername");
 
         toggleRounds = findViewById(R.id.toggleRounds);
         toggleRounds.check(R.id.round10);   // default to 10
@@ -42,6 +49,13 @@ public class LevelSelectActivity extends AppCompatActivity {
         i.putExtra(EXTRA_TIMEOUT, timeoutMs);
         i.putExtra(EXTRA_DIFFICULTY, difficulty);
         i.putExtra(EXTRA_ROUNDS, getSelectedRounds());
+
+        // forward challenge info if this session is a challenge
+        if (challengeToUid != null) {
+            i.putExtra("challengeToUid", challengeToUid);
+            i.putExtra("challengeToUsername", challengeToUsername);
+        }
+
         startActivity(i);
         finish();
     }

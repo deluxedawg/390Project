@@ -12,10 +12,14 @@ import java.util.List;
 
 public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.VH> {
 
-    private final List<UserProfile> friends;
+    public interface Listener { void onChallenge(UserProfile friend); }
 
-    public FriendAdapter(List<UserProfile> friends) {
+    private final List<UserProfile> friends;
+    private final Listener listener;
+
+    public FriendAdapter(List<UserProfile> friends, Listener listener) {
         this.friends = friends;
+        this.listener = listener;
     }
 
     @NonNull
@@ -28,7 +32,9 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.VH> {
 
     @Override
     public void onBindViewHolder(@NonNull VH h, int position) {
-        h.name.setText(friends.get(position).getUsername());
+        UserProfile f = friends.get(position);
+        h.name.setText(f.getUsername());
+        h.challenge.setOnClickListener(v -> listener.onChallenge(f));
     }
 
     @Override
@@ -36,9 +42,11 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.VH> {
 
     static class VH extends RecyclerView.ViewHolder {
         TextView name;
+        View challenge;
         VH(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.tvFriendName);
+            challenge = itemView.findViewById(R.id.btnChallenge);
         }
     }
 }

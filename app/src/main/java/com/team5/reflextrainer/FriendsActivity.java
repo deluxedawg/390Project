@@ -1,5 +1,6 @@
 package com.team5.reflextrainer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -32,6 +33,12 @@ public class FriendsActivity extends AppCompatActivity {
 
         findViewById(R.id.btnBackHome).setOnClickListener(v -> finish());
 
+        refresh();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         refresh();
     }
 
@@ -75,10 +82,18 @@ public class FriendsActivity extends AppCompatActivity {
             @Override
             public void onResult(List<UserProfile> friends) {
                 tvNoFriends.setVisibility(friends.isEmpty() ? View.VISIBLE : View.GONE);
-                rvFriends.setAdapter(new FriendAdapter(friends));
+                rvFriends.setAdapter(new FriendAdapter(friends, friend -> promptChallenge(friend)));
             }
             @Override public void onError(String m) { toast(m); }
         });
+    }
+
+    /** Open the level picker, carrying the friend we're challenging. */
+    private void promptChallenge(UserProfile friend) {
+        Intent i = new Intent(this, LevelSelectActivity.class);
+        i.putExtra("challengeToUid", friend.getUid());
+        i.putExtra("challengeToUsername", friend.getUsername());
+        startActivity(i);
     }
 
     private void toast(String m) {

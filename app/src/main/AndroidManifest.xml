@@ -42,6 +42,8 @@
         <activity android:name=".FriendsActivity" android:exported="false" />
         <activity android:name=".LevelSelectActivity" android:exported="false" />
         <activity android:name=".SummaryActivity" android:exported="false" />
+        <activity android:name=".ChallengesActivity" android:exported="false" />
+        <activity android:name=".ChallengeResultActivity" android:exported="false" />
 
     </application>
 </manifest>
