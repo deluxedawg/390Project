@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -19,6 +20,15 @@ public class ProfileActivity extends AppCompatActivity {
 
         TextView tvUsername = findViewById(R.id.tvUsername);
         TextView tvEmail = findViewById(R.id.tvEmail);
+        SwitchMaterial switchAiCoach = findViewById(R.id.switchAiCoach);
+
+        switchAiCoach.setChecked(AiCoachSettings.isEnabled(this));
+        switchAiCoach.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            AiCoachSettings.setEnabled(this, isChecked);
+            Toast.makeText(this,
+                    isChecked ? "AI Coach enabled" : "AI Coach disabled",
+                    Toast.LENGTH_SHORT).show();
+        });
 
         findViewById(R.id.btnBackHome).setOnClickListener(v -> finish());
 
