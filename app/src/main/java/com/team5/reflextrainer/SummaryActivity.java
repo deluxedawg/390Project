@@ -10,9 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.team5.reflextrainer.data.TrainingSession;
 import com.team5.reflextrainer.data.TrainingSessionRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SummaryActivity extends AppCompatActivity {
 
@@ -55,6 +57,8 @@ public class SummaryActivity extends AppCompatActivity {
         View cardAiCoach = findViewById(R.id.cardAiCoach);
         TextView tvAiTitle = findViewById(R.id.tvAiTitle);
         TextView tvAiDetail = findViewById(R.id.tvAiDetail);
+        TextView tvExerciseName = findViewById(R.id.tvExerciseName);
+        TextView tvExerciseDetail = findViewById(R.id.tvExerciseDetail);
 
         if (!AiCoachSettings.isEnabled(this)) {
             cardAiCoach.setVisibility(View.GONE);
@@ -62,6 +66,12 @@ public class SummaryActivity extends AppCompatActivity {
         }
 
         findViewById(R.id.btnDismissAi).setOnClickListener(v -> cardAiCoach.setVisibility(View.GONE));
+
+        // Exercise explanation: static per difficulty, no DB needed — show it immediately.
+        ExerciseExplanationProvider.Explanation exp =
+                new ExerciseExplanationProvider().forDifficulty(difficulty);
+        tvExerciseName.setText(exp.getName());
+        tvExerciseDetail.setText(exp.getHowItWorks() + "\n\nTip: " + exp.getTip());
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -74,10 +84,22 @@ public class SummaryActivity extends AppCompatActivity {
 
         TrainingSessionRepository repo = new TrainingSessionRepository(this);
         repo.getTrainingHistoryForUser(user.getUid(), sessions -> {
+            // TrainingActivity saves the session BEFORE launching this screen,
+            // so the newest history entry IS this session. Drop it so the coach
+            // compares against genuinely previous sessions.
+            // (Assumes the repository returns newest-first — verify the DAO's ORDER BY.)
+            List<TrainingSession> previous =
+                    (sessions != null && !sessions.isEmpty())
+                            ? sessions.subList(1, sessions.size())
+                            : sessions;
+
             AiRecommendationEngine.Recommendation rec =
-                    new AiRecommendationEngine().build(avg, best, total, correct, difficulty, sessions);
-            tvAiTitle.setText(rec.getTitle());
-            tvAiDetail.setText(rec.getDetail());
+                    new AiRecommendationEngine().build(avg, best, total, correct, difficulty, previous);
+
+            runOnUiThread(() -> {
+                tvAiTitle.setText(rec.getTitle());
+                tvAiDetail.setText(rec.getDetail());
+            });
         });
     }
 }
