@@ -108,13 +108,8 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
 
 
     private void connectToSensor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)!= PackageManager.PERMISSION_GRANTED)
-        {
-                updateSensorStatus(SensorStatus.DISCONNECTED);
-                return;
-
-        }
-        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        android.bluetooth.BluetoothManager systemBtManager = (android.bluetooth.BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
+        BluetoothAdapter adapter = systemBtManager.getAdapter();
         if (adapter == null || !adapter.isEnabled()) {
             updateSensorStatus(SensorStatus.DISCONNECTED);
             return;

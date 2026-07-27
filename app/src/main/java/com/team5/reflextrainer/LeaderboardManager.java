@@ -62,4 +62,42 @@ public class LeaderboardManager {
                 })
                 .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
+
+    /** Load only the entries for the given set of uids (friends + me). */
+    public void loadFriendsLeaderboard(java.util.Set<String> allowedUids, LeaderboardCallback callback) {
+        db.collection(COLLECTION)
+                .orderBy("bestReactionMs", Query.Direction.ASCENDING)
+                .get()
+                .addOnSuccessListener(query -> {
+                    List<LeaderboardEntry> list = new ArrayList<>();
+                    query.forEach(doc -> {
+                        if (allowedUids.contains(doc.getId())) {     // doc id == uid
+                            list.add(doc.toObject(LeaderboardEntry.class));
+                        }
+                    });
+                    callback.onResult(list);
+                })
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
+
+    public interface ScoreCallback {
+        void onResult(int bestAvgMs);   // 0 if none yet
+        void onError(String message);
+    }
+
+    /** Fetch my own best average from the leaderboard. */
+    public void getMyBestScore(ScoreCallback callback) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) { callback.onError("Not signed in"); return; }
+
+        db.collection(COLLECTION).document(user.getUid()).get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists() && doc.getLong("bestReactionMs") != null) {
+                        callback.onResult(doc.getLong("bestReactionMs").intValue());
+                    } else {
+                        callback.onResult(0);
+                    }
+                })
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
 }

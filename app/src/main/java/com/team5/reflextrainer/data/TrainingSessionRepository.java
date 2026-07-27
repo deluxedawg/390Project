@@ -16,16 +16,24 @@ public class TrainingSessionRepository {
         databaseExecutor = Executors.newSingleThreadExecutor();
     }
 
-    public void saveTrainingSession(String userId, int reactionTimeMs, String trainingMode, String difficulty) {
+    public void saveSession(String userId, int avgMs, int bestMs, int totalRounds,
+                            int correctRounds, String difficulty) {
         TrainingSession session = new TrainingSession(
-                userId,
-                reactionTimeMs,
-                trainingMode,
-                difficulty,
-                System.currentTimeMillis()
-        );
-
+                userId, avgMs, bestMs, totalRounds, correctRounds,
+                difficulty, System.currentTimeMillis());
         databaseExecutor.execute(() -> trainingSessionDao.insertTrainingSession(session));
+    }
+
+    public interface HistoryCallback {
+        void onResult(List<TrainingSession> sessions);
+    }
+
+    public void getTrainingHistoryForUser(String userId, HistoryCallback callback) {
+        android.os.Handler mainHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+        databaseExecutor.execute(() -> {
+            List<TrainingSession> sessions = trainingSessionDao.getSessionsForUser(userId);
+            mainHandler.post(() -> callback.onResult(sessions));
+        });
     }
 
     public List<TrainingSession> getTrainingHistory() {
@@ -43,4 +51,6 @@ public class TrainingSessionRepository {
     public void clearTrainingHistory() {
         databaseExecutor.execute(trainingSessionDao::clearAllSessions);
     }
+
+
 }
