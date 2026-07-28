@@ -120,7 +120,7 @@ public class ESPBluetoothManager {
                     listener.onMessage(msg);
                 }
             }catch(IOException e){
-                Log.w(TAG, "READ failed, connectiom dropped", e);
+                Log.w(TAG, "READ failed, connection dropped", e);
                 break;
             }
         }

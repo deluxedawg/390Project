@@ -44,8 +44,7 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         tvSensorStatus = findViewById(R.id.tvSensorStatus);
-        updateSensorStatus(SensorStatus.DISCONNECTED); // default until sensor connects
-
+        updateSensorStatus(SensorStatus.DISCONNECTED);
 
         TextView tvWelcome = findViewById(R.id.tvWelcome);
         if (user != null) {
@@ -61,7 +60,12 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
 
         Button startTraining = findViewById(R.id.btnStart);
         startTraining.setOnClickListener(v ->
-                startActivity(new Intent(this, TrainingActivity.class)));
+                startActivity(new Intent(this, LevelSelectActivity.class)));
+
+        // NEW from teammate
+        Button viewHistory = findViewById(R.id.btnViewHistory);
+        viewHistory.setOnClickListener(v ->
+                startActivity(new Intent(this, HistoryActivity.class)));
 
         Button leaderboard = findViewById(R.id.btnLeaderboard);
         leaderboard.setOnClickListener(v ->
@@ -70,6 +74,11 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         Button profile = findViewById(R.id.btnProfile);
         profile.setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class)));
+
+        // NEW from teammate
+        Button challenges = findViewById(R.id.btnChallenges);
+        challenges.setOnClickListener(v ->
+                startActivity(new Intent(this, ChallengesActivity.class)));
 
         ESPBluetoothManager.getInstance().setListener(this);
         checkPermissionsAndConnect();
@@ -106,10 +115,13 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         }
     }
 
-
     private void connectToSensor() {
-        android.bluetooth.BluetoothManager systemBtManager = (android.bluetooth.BluetoothManager) getSystemService(BLUETOOTH_SERVICE);
-        BluetoothAdapter adapter = systemBtManager.getAdapter();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)!= PackageManager.PERMISSION_GRANTED)
+        {
+            updateSensorStatus(SensorStatus.DISCONNECTED);
+            return;
+        }
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (adapter == null || !adapter.isEnabled()) {
             updateSensorStatus(SensorStatus.DISCONNECTED);
             return;
@@ -131,21 +143,21 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
     public void onMessage(SensorMessage message) {
 
     }
-    // the UI-2 method
+
     public void updateSensorStatus(SensorStatus status) {
         switch (status) {
             case CONNECTED:
                 tvSensorStatus.setText("Sensor: Connected");
-                tvSensorStatus.setTextColor(Color.parseColor("#2E7D32")); // green
+                tvSensorStatus.setTextColor(Color.parseColor("#2E7D32"));
                 break;
             case CONNECTING:
                 tvSensorStatus.setText("Sensor: Connecting...");
-                tvSensorStatus.setTextColor(Color.parseColor("#F9A825")); // amber
+                tvSensorStatus.setTextColor(Color.parseColor("#F9A825"));
                 break;
             case DISCONNECTED:
             default:
                 tvSensorStatus.setText("Sensor: Disconnected");
-                tvSensorStatus.setTextColor(Color.parseColor("#D32F2F")); // red
+                tvSensorStatus.setTextColor(Color.parseColor("#D32F2F"));
                 break;
         }
     }
