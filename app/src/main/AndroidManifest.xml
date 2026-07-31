@@ -44,6 +44,8 @@
         <activity android:name=".SummaryActivity" android:exported="false" />
         <activity android:name=".ChallengesActivity" android:exported="false" />
         <activity android:name=".ChallengeResultActivity" android:exported="false" />
+        <activity android:name=".ModeSelectActivity" android:exported="false" />
+        <activity android:name=".RhythmActivity" android:exported="false" />
 
     </application>
 </manifest>

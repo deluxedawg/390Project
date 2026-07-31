@@ -18,6 +18,7 @@
         android:layout_marginTop="8dp"/>
 
     <TextView
+        android:id="@+id/tvSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Best average time"
@@ -27,6 +28,34 @@
         android:layout_marginTop="2dp"
         android:layout_marginBottom="16dp"/>
 
+    <!-- Reaction vs Rhythm -->
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleMode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        android:layout_marginBottom="12dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/modeReaction"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Reaction"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/modeRhythm"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Rhythm"/>
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <!-- Global vs Friends -->
     <com.google.android.material.button.MaterialButtonToggleGroup
         android:id="@+id/toggleScope"
         android:layout_width="match_parent"

@@ -21,7 +21,12 @@ public class LeaderboardActivity extends AppCompatActivity {
 
     private RecyclerView rv;
     private TextView tvEmpty;
-    private final LeaderboardManager lm = new LeaderboardManager();
+
+    private final LeaderboardManager reactionLm = new LeaderboardManager();
+    private final RhythmLeaderboardManager rhythmLm = new RhythmLeaderboardManager();
+
+    private boolean rhythmMode = false;   // false = Reaction, true = Rhythm
+    private boolean friendsScope = false; // false = Global, true = Friends
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,22 +39,39 @@ public class LeaderboardActivity extends AppCompatActivity {
 
         findViewById(R.id.btnBackHome).setOnClickListener(v -> finish());
 
-        MaterialButtonToggleGroup toggle = findViewById(R.id.toggleScope);
-        toggle.check(R.id.scopeGlobal);
-        toggle.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
-            if (!isChecked) return;
-            if (checkedId == R.id.scopeFriends) loadFriends();
-            else loadGlobal();
+        MaterialButtonToggleGroup toggleMode = findViewById(R.id.toggleMode);
+        toggleMode.check(R.id.modeReaction);
+        toggleMode.addOnButtonCheckedListener((g, id, checked) -> {
+            if (!checked) return;
+            rhythmMode = (id == R.id.modeRhythm);
+            load();
         });
 
-        loadGlobal();
+        MaterialButtonToggleGroup toggleScope = findViewById(R.id.toggleScope);
+        toggleScope.check(R.id.scopeGlobal);
+        toggleScope.addOnButtonCheckedListener((g, id, checked) -> {
+            if (!checked) return;
+            friendsScope = (id == R.id.scopeFriends);
+            load();
+        });
+
+        load();
+    }
+
+    private void load() {
+        if (friendsScope) {
+            loadFriends();
+        } else {
+            loadGlobal();
+        }
     }
 
     private void loadGlobal() {
-        lm.loadLeaderboard(new LeaderboardManager.LeaderboardCallback() {
-            @Override public void onResult(List<LeaderboardEntry> entries) { show(entries); }
-            @Override public void onError(String m) { toast(m); }
-        });
+        if (rhythmMode) {
+            rhythmLm.loadLeaderboard(cb());
+        } else {
+            reactionLm.loadLeaderboard(cb());
+        }
     }
 
     private void loadFriends() {
@@ -60,16 +82,25 @@ public class LeaderboardActivity extends AppCompatActivity {
             @Override
             public void onResult(List<UserProfile> friends) {
                 Set<String> uids = new HashSet<>();
-                uids.add(me.getUid());                       // include myself
+                uids.add(me.getUid());
                 for (UserProfile f : friends) uids.add(f.getUid());
 
-                lm.loadFriendsLeaderboard(uids, new LeaderboardManager.LeaderboardCallback() {
-                    @Override public void onResult(List<LeaderboardEntry> entries) { show(entries); }
-                    @Override public void onError(String m) { toast(m); }
-                });
+                if (rhythmMode) {
+                    rhythmLm.loadFriendsLeaderboard(uids, cb());
+                } else {
+                    reactionLm.loadFriendsLeaderboard(uids, cb());
+                }
             }
             @Override public void onError(String m) { toast(m); }
         });
+    }
+
+    // one callback type works for both managers since they share LeaderboardCallback shape
+    private LeaderboardManager.LeaderboardCallback cb() {
+        return new LeaderboardManager.LeaderboardCallback() {
+            @Override public void onResult(List<LeaderboardEntry> entries) { show(entries); }
+            @Override public void onError(String m) { toast(m); }
+        };
     }
 
     private void show(List<LeaderboardEntry> entries) {

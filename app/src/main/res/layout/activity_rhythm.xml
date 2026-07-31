@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/tvPhase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="RHYTHM"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.15"/>
+
+        <TextView
+            android:id="@+id/tvInstruction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Listen to the beat first"
+            android:textColor="@color/text_primary"
+            android:textSize="20sp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="40dp"/>
+
+        <!-- the shrinking-ring view sits here -->
+        <com.team5.reflextrainer.RingView
+            android:id="@+id/ringView"
+            android:layout_width="240dp"
+            android:layout_height="240dp"/>
+
+        <TextView
+            android:id="@+id/tvFeedback"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/accent"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:fontFamily="monospace"
+            android:layout_marginTop="32dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAction"
+            style="@style/AppButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Start Listening"
+            android:layout_marginTop="40dp"/>
+
+    </LinearLayout>
+</FrameLayout>

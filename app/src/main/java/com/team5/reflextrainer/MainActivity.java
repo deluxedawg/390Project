@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
 
         Button startTraining = findViewById(R.id.btnStart);
         startTraining.setOnClickListener(v ->
-                startActivity(new Intent(this, LevelSelectActivity.class)));
+                startActivity(new Intent(this, ModeSelectActivity.class)));
 
         // NEW from teammate
         Button viewHistory = findViewById(R.id.btnViewHistory);
