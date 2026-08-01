@@ -31,15 +31,15 @@ public class ChallengeResultActivity extends AppCompatActivity {
 
         if (tie) {
             tvOutcome.setText("TIE");
-            tvOutcome.setTextColor(Color.parseColor("#8A94A6"));
+            tvOutcome.setTextColor(Color.parseColor("#8C96A6"));
             tvOpponentLine.setText("Dead even with " + opponent);
         } else if (won) {
             tvOutcome.setText("YOU WON");
-            tvOutcome.setTextColor(Color.parseColor("#00E5A0"));
+            tvOutcome.setTextColor(Color.parseColor("#29FF88"));
             tvOpponentLine.setText("You beat " + opponent);
         } else {
             tvOutcome.setText("YOU LOST");
-            tvOutcome.setTextColor(Color.parseColor("#FF5252"));
+            tvOutcome.setTextColor(Color.parseColor("#FF4557"));
             tvOpponentLine.setText(opponent + " was faster");
         }
 

@@ -3,6 +3,7 @@ package com.team5.reflextrainer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -34,6 +35,7 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.VH> {
     public void onBindViewHolder(@NonNull VH h, int position) {
         UserProfile f = friends.get(position);
         h.name.setText(f.getUsername());
+        h.avatar.setImageResource(Avatars.resFor(f.getAvatarId()));
         h.challenge.setOnClickListener(v -> listener.onChallenge(f));
     }
 
@@ -42,10 +44,12 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.VH> {
 
     static class VH extends RecyclerView.ViewHolder {
         TextView name;
+        ImageView avatar;
         View challenge;
         VH(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.tvFriendName);
+            avatar = itemView.findViewById(R.id.ivFriendAvatar);
             challenge = itemView.findViewById(R.id.btnChallenge);
         }
     }

@@ -8,12 +8,10 @@
     android:padding="28dp">
 
     <TextView
+        style="@style/TextAppearance.ReflexTrainer.Eyebrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ACTIVE SESSION"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp"
-        android:letterSpacing="0.15"/>
+        android:text="ACTIVE SESSION"/>
 
     <TextView
         android:id="@+id/tvProgress"
@@ -21,7 +19,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/text_secondary"
         android:textSize="14sp"
-        android:letterSpacing="0.1"
+        android:fontFamily="@font/space_mono"
         android:layout_marginBottom="8dp"/>
 
     <TextView
@@ -32,18 +30,19 @@
         android:textColor="@color/text_primary"
         android:textSize="22sp"
         android:gravity="center"
-        android:layout_marginTop="48dp"/>
+        android:layout_marginTop="40dp"/>
 
+    <!-- readout window: frames the ms result like an instrument display -->
     <TextView
         android:id="@+id/tvResult"
+        style="@style/TextAppearance.ReflexTrainer.Readout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="—"
-        android:textColor="@color/accent"
-        android:textSize="52sp"
-        android:textStyle="bold"
-        android:fontFamily="monospace"
+        android:textSize="46sp"
+        android:background="@drawable/bg_readout"
         android:gravity="center"
+        android:minWidth="220dp"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="48dp"/>
 

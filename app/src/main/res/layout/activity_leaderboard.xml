@@ -8,13 +8,10 @@
     android:padding="24dp">
 
     <TextView
+        style="@style/TextAppearance.ReflexTrainer.Eyebrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="LEADERBOARD"
-        android:textColor="@color/text_secondary"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.15"
         android:layout_marginTop="8dp"/>
 
     <TextView

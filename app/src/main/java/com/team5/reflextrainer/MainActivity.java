@@ -2,9 +2,10 @@ package com.team5.reflextrainer;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.graphics.Color;
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.content.pm.PackageManager;
@@ -13,6 +14,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 
+import com.team5.reflextrainer.data.TrainingSessionRepository;
 import com.team5.reflextrainer.hardware.ESPBluetoothManager;
 import com.team5.reflextrainer.hardware.SensorMessage;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,9 +22,26 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements ESPBluetoothManager.Listener {
 
     private TextView tvSensorStatus;
+    private ImageView dotHold, dotSet, dotGo;
+    private TextView tvStreak, tvStreakSub;
+    private TextView tvWelcome;
+    private ImageView ivHomeAvatar;
+
+    private ImageView[] badgeViews;
+    private TextView tvBadgeCount;
+    private final boolean[] badgeEarned = new boolean[Achievements.COUNT];
+
+    private TrainingSessionRepository sessionRepository;
+    private String currentUserId;
+
+    private static final float LIT = 1f;
+    private static final float UNLIT = 0.25f;
+    private static final float BADGE_LOCKED_ALPHA = 0.28f;
 
     private final ActivityResultLauncher<String[]> permissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), results -> {
         boolean allGranted = true;
@@ -42,16 +61,42 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         setContentView(R.layout.activity_main);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        currentUserId = (user != null) ? user.getUid() : null;
+        sessionRepository = new TrainingSessionRepository(this);
 
         tvSensorStatus = findViewById(R.id.tvSensorStatus);
+        dotHold = findViewById(R.id.dotHold);
+        dotSet = findViewById(R.id.dotSet);
+        dotGo = findViewById(R.id.dotGo);
         updateSensorStatus(SensorStatus.DISCONNECTED);
 
-        TextView tvWelcome = findViewById(R.id.tvWelcome);
-        if (user != null) {
-            tvWelcome.setText("Logged in as: " + user.getEmail());
-        }
+        tvStreak = findViewById(R.id.tvStreak);
+        tvStreakSub = findViewById(R.id.tvStreakSub);
 
-        Button logout = findViewById(R.id.btnLogout);
+        tvBadgeCount = findViewById(R.id.tvBadgeCount);
+        badgeViews = new ImageView[] {
+                findViewById(R.id.badge0), findViewById(R.id.badge1),
+                findViewById(R.id.badge2), findViewById(R.id.badge3),
+                findViewById(R.id.badge4), findViewById(R.id.badge5),
+                findViewById(R.id.badge6), findViewById(R.id.badge7),
+        };
+        View.OnClickListener openAchievements = v ->
+                startActivity(new Intent(this, AchievementsActivity.class));
+        for (ImageView badge : badgeViews) {
+            badge.setOnClickListener(openAchievements);
+        }
+        findViewById(R.id.cardBadges).setOnClickListener(openAchievements);
+        refreshBadgeUi();
+
+        loadStreak();
+        loadChallengeBadge();
+
+        tvWelcome = findViewById(R.id.tvWelcome);
+        ivHomeAvatar = findViewById(R.id.ivHomeAvatar);
+        tvWelcome.setText(fallbackName(user));
+        loadProfileHeader(user);
+
+        View logout = findViewById(R.id.btnLogout);
         logout.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(this, LoginActivity.class));
@@ -63,20 +108,20 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
                 startActivity(new Intent(this, ModeSelectActivity.class)));
 
         // NEW from teammate
-        Button viewHistory = findViewById(R.id.btnViewHistory);
+        View viewHistory = findViewById(R.id.btnViewHistory);
         viewHistory.setOnClickListener(v ->
                 startActivity(new Intent(this, HistoryActivity.class)));
 
-        Button leaderboard = findViewById(R.id.btnLeaderboard);
+        View leaderboard = findViewById(R.id.btnLeaderboard);
         leaderboard.setOnClickListener(v ->
                 startActivity(new Intent(this, LeaderboardActivity.class)));
 
-        Button profile = findViewById(R.id.btnProfile);
+        View profile = findViewById(R.id.btnProfile);
         profile.setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class)));
 
         // NEW from teammate
-        Button challenges = findViewById(R.id.btnChallenges);
+        View challenges = findViewById(R.id.btnChallenges);
         challenges.setOnClickListener(v ->
                 startActivity(new Intent(this, ChallengesActivity.class)));
 
@@ -90,6 +135,85 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         if(!ESPBluetoothManager.getInstance().isConnected()){
             checkPermissionsAndConnect();
         }
+        loadStreak();
+        loadChallengeBadge();
+        loadProfileHeader(FirebaseAuth.getInstance().getCurrentUser());
+    }
+
+    private void loadProfileHeader(FirebaseUser user) {
+        if (user == null) return;
+        new ProfileManager().loadProfile(user.getUid(), new ProfileManager.ProfileCallback() {
+            @Override
+            public void onResult(UserProfile profile) {
+                if (profile.getUsername() != null && !profile.getUsername().isEmpty()) {
+                    tvWelcome.setText(profile.getUsername());
+                }
+                ivHomeAvatar.setImageResource(Avatars.resFor(profile.getAvatarId()));
+            }
+            @Override
+            public void onError(String message) { /* keep the fallback name and default avatar */ }
+        });
+    }
+
+    /** Shown immediately, before the Firestore username lookup resolves. */
+    private String fallbackName(FirebaseUser user) {
+        if (user == null || user.getEmail() == null) return "Trainer";
+        String email = user.getEmail();
+        int at = email.indexOf('@');
+        return at > 0 ? email.substring(0, at) : email;
+    }
+
+    // ===================== streak =====================
+
+    private void loadStreak() {
+        if (currentUserId == null || tvStreak == null) return;
+        sessionRepository.getTrainingHistoryForUser(currentUserId, sessions -> {
+            Achievements.Streak streak = Achievements.computeStreak(sessions);
+            updateStreakUi(streak);
+            Achievements.computeSessionBadges(sessions, streak.days, badgeEarned);
+            refreshBadgeUi();
+        });
+    }
+
+    private void updateStreakUi(Achievements.Streak streak) {
+        if (streak.days == 0) {
+            tvStreak.setText("No streak yet");
+            tvStreakSub.setText("Train today to start one");
+        } else {
+            tvStreak.setText(streak.days == 1 ? "1-day streak" : streak.days + "-day streak");
+            tvStreakSub.setText(streak.trainedToday
+                    ? "Nice work today — come back tomorrow"
+                    : "Train today to keep it alive");
+        }
+    }
+
+    // ===================== badges =====================
+
+    private void loadChallengeBadge() {
+        if (currentUserId == null || tvBadgeCount == null) return;
+        new ChallengeManager().loadCompleted(new ChallengeManager.ListCallback() {
+            @Override
+            public void onResult(List<Challenge> challenges) {
+                boolean wonOne = false;
+                for (Challenge c : challenges) {
+                    if (currentUserId.equals(c.getWinnerUid())) { wonOne = true; break; }
+                }
+                badgeEarned[7] = wonOne;
+                refreshBadgeUi();
+            }
+            @Override
+            public void onError(String message) { /* leave the Challenger badge as-is */ }
+        });
+    }
+
+    private void refreshBadgeUi() {
+        if (badgeViews == null) return;
+        int earnedCount = 0;
+        for (int i = 0; i < badgeViews.length; i++) {
+            badgeViews[i].setAlpha(badgeEarned[i] ? LIT : BADGE_LOCKED_ALPHA);
+            if (badgeEarned[i]) earnedCount++;
+        }
+        tvBadgeCount.setText(earnedCount + " of " + badgeViews.length + " unlocked");
     }
 
     private void checkPermissionsAndConnect() {
@@ -145,19 +269,26 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
     }
 
     public void updateSensorStatus(SensorStatus status) {
+        dotHold.setAlpha(UNLIT);
+        dotSet.setAlpha(UNLIT);
+        dotGo.setAlpha(UNLIT);
+
         switch (status) {
             case CONNECTED:
-                tvSensorStatus.setText("Sensor: Connected");
-                tvSensorStatus.setTextColor(Color.parseColor("#2E7D32"));
+                tvSensorStatus.setText("Connected");
+                tvSensorStatus.setTextColor(getColor(R.color.accent));
+                dotGo.setAlpha(LIT);
                 break;
             case CONNECTING:
-                tvSensorStatus.setText("Sensor: Connecting...");
-                tvSensorStatus.setTextColor(Color.parseColor("#F9A825"));
+                tvSensorStatus.setText("Connecting...");
+                tvSensorStatus.setTextColor(getColor(R.color.color_set));
+                dotSet.setAlpha(LIT);
                 break;
             case DISCONNECTED:
             default:
-                tvSensorStatus.setText("Sensor: Disconnected");
-                tvSensorStatus.setTextColor(Color.parseColor("#D32F2F"));
+                tvSensorStatus.setText("Disconnected");
+                tvSensorStatus.setTextColor(getColor(R.color.danger));
+                dotHold.setAlpha(LIT);
                 break;
         }
     }

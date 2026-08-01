@@ -20,6 +20,19 @@ public class ProfileManager {
         void onError(String message);
     }
 
+    public interface ActionCallback {
+        void onDone();
+        void onError(String message);
+    }
+
+    /** Partial update: only touches username + avatarId, leaves uid/email untouched. */
+    public void updateUsernameAndAvatar(String uid, String username, int avatarId, ActionCallback callback) {
+        db.collection(COLLECTION).document(uid)
+                .update("username", username, "avatarId", avatarId)
+                .addOnSuccessListener(v -> callback.onDone())
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
+
     /** Load the profile for a given uid. */
     public void loadProfile(String uid, ProfileCallback callback) {
         db.collection(COLLECTION).document(uid).get()

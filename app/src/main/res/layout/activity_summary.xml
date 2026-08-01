@@ -8,14 +8,19 @@
     android:padding="24dp">
 
     <TextView
+        style="@style/TextAppearance.ReflexTrainer.Eyebrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="SESSION COMPLETE"
-        android:textColor="@color/text_secondary"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.15"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nice work — here's how it went"
+        android:textColor="@color/text_primary"
+        android:textSize="20sp"
+        android:layout_marginTop="2dp"
         android:layout_marginBottom="16dp"/>
 
     <!-- headline stats -->
@@ -46,12 +51,11 @@
                     android:textSize="12sp"/>
                 <TextView
                     android:id="@+id/tvAvg"
+                    style="@style/TextAppearance.ReflexTrainer.Readout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_primary"
-                    android:textSize="26sp"
-                    android:textStyle="bold"
-                    android:fontFamily="monospace"/>
+                    android:textSize="24sp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -68,12 +72,10 @@
                     android:textSize="12sp"/>
                 <TextView
                     android:id="@+id/tvBest"
+                    style="@style/TextAppearance.ReflexTrainer.Readout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/accent"
-                    android:textSize="26sp"
-                    android:textStyle="bold"
-                    android:fontFamily="monospace"/>
+                    android:textSize="24sp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -90,12 +92,11 @@
                     android:textSize="12sp"/>
                 <TextView
                     android:id="@+id/tvAccuracy"
+                    style="@style/TextAppearance.ReflexTrainer.Readout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_primary"
-                    android:textSize="26sp"
-                    android:textStyle="bold"
-                    android:fontFamily="monospace"/>
+                    android:textSize="24sp"/>
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -180,13 +181,10 @@
     </androidx.cardview.widget.CardView>
 
     <TextView
+        style="@style/TextAppearance.ReflexTrainer.Eyebrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ROUNDS"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.15"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="8dp"/>
 

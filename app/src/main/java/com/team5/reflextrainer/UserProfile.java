@@ -4,6 +4,7 @@ public class UserProfile {
     private String uid;
     private String username;
     private String email;
+    private int avatarId;   // index into Avatars.DRAWABLES; 0 for existing accounts
 
     public UserProfile() { }   // required by Firestore
 
@@ -21,4 +22,7 @@ public class UserProfile {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public int getAvatarId() { return avatarId; }
+    public void setAvatarId(int avatarId) { this.avatarId = avatarId; }
 }

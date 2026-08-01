@@ -3,6 +3,7 @@ package com.team5.reflextrainer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,6 +34,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         holder.tvRank.setText(String.valueOf(position + 1));
         holder.tvName.setText(e.getDisplayName());
         holder.tvScore.setText(String.format(Locale.US, "%d ms", e.getBestReactionMs()));
+        holder.ivAvatar.setImageResource(Avatars.resFor(e.getAvatarId()));
     }
 
     @Override
@@ -42,11 +44,13 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvRank, tvName, tvScore;
+        ImageView ivAvatar;
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvRank  = itemView.findViewById(R.id.tvRank);
             tvName  = itemView.findViewById(R.id.tvName);
             tvScore = itemView.findViewById(R.id.tvScore);
+            ivAvatar = itemView.findViewById(R.id.ivAvatar);
         }
     }
 }

@@ -36,10 +36,18 @@ public class LeaderboardManager {
                         }
                     }
                     if (shouldWrite) {
-                        Map<String, Object> entry = new HashMap<>();
-                        entry.put("displayName", name);
-                        entry.put("bestReactionMs", reactionMs);
-                        db.collection(COLLECTION).document(uid).set(entry);
+                        db.collection("profiles").document(uid).get()
+                                .addOnSuccessListener(profileDoc -> {
+                                    int avatarId = 0;
+                                    Long avatarLong = profileDoc.getLong("avatarId");
+                                    if (avatarLong != null) avatarId = avatarLong.intValue();
+
+                                    Map<String, Object> entry = new HashMap<>();
+                                    entry.put("displayName", name);
+                                    entry.put("bestReactionMs", reactionMs);
+                                    entry.put("avatarId", avatarId);
+                                    db.collection(COLLECTION).document(uid).set(entry);
+                                });
                     }
                 });
     }

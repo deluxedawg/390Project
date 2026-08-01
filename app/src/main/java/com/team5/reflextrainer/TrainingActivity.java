@@ -22,7 +22,7 @@ import java.util.Random;
 public class TrainingActivity extends AppCompatActivity implements ESPBluetoothManager.Listener {
 
     // ===== TEMP: tap-to-react instead of the physical sensor =====
-    private static final boolean SIMULATION_MODE = false;
+    private static final boolean SIMULATION_MODE = true;
 
     private TextView tvInstruction, tvResult, tvProgress;
     private Button btnStartRound;
@@ -108,6 +108,7 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
         correctCount = 0;
         reactionTimes.clear();
         tvResult.setText("");
+        tvResult.setTextColor(getColor(R.color.accent));
         beginNextRound();
     }
 
@@ -129,6 +130,7 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
                 return;
             }
             tvInstruction.setText("Ready...");
+            tvInstruction.setTextColor(getColor(R.color.color_set));
             byte target = pickRandomTarget();
             ESPBluetoothManager.getInstance().sendStartChallenge(target, timeoutMs);
         }
@@ -138,17 +140,22 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
     private void recordRound(byte outcome, int reactionMs) {
         String outcomeText;
         if (outcome == SensorMessage.OUTCOME_CORRECT) {
-            outcomeText = "Correct! " + reactionMs + " ms";
+            outcomeText = reactionMs + " ms";
+            tvResult.setTextColor(getColor(R.color.accent));
             reactionTimes.add(reactionMs);
             correctCount++;
         } else if (outcome == SensorMessage.OUTCOME_WRONG_BTN) {
             outcomeText = "Wrong!";
+            tvResult.setTextColor(getColor(R.color.danger));
         } else if (outcome == SensorMessage.OUTCOME_TIMEOUT) {
             outcomeText = "Too Slow!";
+            tvResult.setTextColor(getColor(R.color.danger));
         } else {
             outcomeText = "Error";
+            tvResult.setTextColor(getColor(R.color.danger));
         }
         tvResult.setText(outcomeText);
+        tvInstruction.setTextColor(getColor(R.color.text_primary));
 
         mainhandler.postDelayed(this::beginNextRound, 900);
     }
@@ -234,10 +241,12 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
     private void startSimRound() {
         int delay = 800 + random.nextInt(1500);
         tvInstruction.setText("Wait...");
+        tvInstruction.setTextColor(getColor(R.color.danger));
         waitingForTap = false;
 
         mainhandler.postDelayed(() -> {
             tvInstruction.setText("TAP NOW!");
+            tvInstruction.setTextColor(getColor(R.color.accent));
             waitingForTap = true;
             roundStartMs = System.currentTimeMillis();
 
@@ -285,6 +294,7 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
     private void handleMessage(SensorMessage message) {
         if (message.response == SensorMessage.RESP_ACK) {
             tvInstruction.setText(describeTarget(message.targetId) + "!");
+            tvInstruction.setTextColor(getColor(R.color.accent));
             return;
         }
         if (message.response == SensorMessage.RESP_RESULT) {

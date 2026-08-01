@@ -7,14 +7,26 @@
     android:padding="24dp">
 
     <TextView
+        style="@style/TextAppearance.ReflexTrainer.Eyebrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="REQUESTS"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.15"
-        android:layout_marginTop="8dp"
+        android:text="FRIENDS"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Your training circle"
+        android:textColor="@color/text_primary"
+        android:textSize="20sp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="20dp"/>
+
+    <TextView
+        style="@style/TextAppearance.ReflexTrainer.Eyebrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Requests"
         android:layout_marginBottom="8dp"/>
 
     <TextView
@@ -23,6 +35,8 @@
         android:layout_height="wrap_content"
         android:text="No pending requests."
         android:textColor="@color/text_secondary"
+        android:gravity="center"
+        android:paddingVertical="16dp"
         android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -31,13 +45,10 @@
         android:layout_height="wrap_content"/>
 
     <TextView
+        style="@style/TextAppearance.ReflexTrainer.Eyebrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="FRIENDS"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.15"
+        android:text="Friends"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="8dp"/>
 
@@ -45,8 +56,10 @@
         android:id="@+id/tvNoFriends"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="No friends yet."
+        android:text="No friends yet. Add one to start challenging each other."
         android:textColor="@color/text_secondary"
+        android:gravity="center"
+        android:paddingVertical="16dp"
         android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView

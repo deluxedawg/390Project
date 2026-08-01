@@ -9,23 +9,20 @@
     android:padding="28dp">
 
     <TextView
+        style="@style/TextAppearance.ReflexTrainer.Display"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="CREATE"
-        android:textColor="@color/text_primary"
-        android:textSize="40sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.05"/>
+        android:textSize="38sp"/>
 
     <TextView
+        style="@style/TextAppearance.ReflexTrainer.Display"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ACCOUNT"
         android:textColor="@color/accent"
-        android:textSize="40sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.05"
-        android:layout_marginBottom="40dp"/>
+        android:textSize="38sp"
+        android:layout_marginBottom="36dp"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"

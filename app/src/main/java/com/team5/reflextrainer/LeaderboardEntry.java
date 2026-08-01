@@ -3,6 +3,7 @@ package com.team5.reflextrainer;
 public class LeaderboardEntry {
     private String displayName;
     private int bestReactionMs;
+    private int avatarId;   // snapshot of the avatar at the time this score was submitted
 
     public LeaderboardEntry() { }   // required by Firestore
 
@@ -16,4 +17,7 @@ public class LeaderboardEntry {
 
     public int getBestReactionMs() { return bestReactionMs; }
     public void setBestReactionMs(int bestReactionMs) { this.bestReactionMs = bestReactionMs; }
+
+    public int getAvatarId() { return avatarId; }
+    public void setAvatarId(int avatarId) { this.avatarId = avatarId; }
 }

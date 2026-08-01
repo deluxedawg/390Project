@@ -1,0 +1,17 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+
+    <!-- badge: ring -->
+    <path
+        android:fillColor="@color/danger"
+        android:pathData="M0,20 A20,20 0 1,1 40,20 A20,20 0 1,1 0,20 Z"/>
+
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2.6"
+        android:fillColor="#00000000"
+        android:pathData="M12,20 A8,8 0 1,1 28,20 A8,8 0 1,1 12,20 Z"/>
+</vector>

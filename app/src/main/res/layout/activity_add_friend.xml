@@ -8,14 +8,19 @@
     android:padding="24dp">
 
     <TextView
+        style="@style/TextAppearance.ReflexTrainer.Eyebrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ADD FRIEND"
-        android:textColor="@color/text_secondary"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.15"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Find them by username"
+        android:textColor="@color/text_primary"
+        android:textSize="20sp"
+        android:layout_marginTop="2dp"
         android:layout_marginBottom="24dp"/>
 
     <com.google.android.material.textfield.TextInputLayout

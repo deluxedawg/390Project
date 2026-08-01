@@ -9,11 +9,10 @@
 
     <TextView
         android:id="@+id/tvOutcome"
+        style="@style/TextAppearance.ReflexTrainer.Display"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="56sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.05"/>
+        android:textSize="48sp"/>
 
     <TextView
         android:id="@+id/tvOpponentLine"
@@ -44,12 +43,11 @@
                 android:letterSpacing="0.1"/>
             <TextView
                 android:id="@+id/tvMyScore"
+                style="@style/TextAppearance.ReflexTrainer.Readout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_primary"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:fontFamily="monospace"
+                android:textSize="30sp"
                 android:layout_marginTop="4dp"/>
         </LinearLayout>
 
@@ -68,12 +66,11 @@
                 android:letterSpacing="0.1"/>
             <TextView
                 android:id="@+id/tvTheirScore"
+                style="@style/TextAppearance.ReflexTrainer.Readout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_primary"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:fontFamily="monospace"
+                android:textSize="30sp"
                 android:layout_marginTop="4dp"/>
         </LinearLayout>
     </LinearLayout>

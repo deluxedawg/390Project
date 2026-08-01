@@ -57,10 +57,12 @@ public class FriendManager {
                             .addOnSuccessListener(myDoc -> {
                                 String myUsername = (myDoc.exists() && myDoc.getString("username") != null)
                                         ? myDoc.getString("username") : me.getEmail();
+                                Long myAvatarLong = myDoc.getLong("avatarId");
+                                int myAvatarId = (myAvatarLong != null) ? myAvatarLong.intValue() : 0;
 
                                 FriendRequest req = new FriendRequest(
-                                        me.getUid(), myUsername,
-                                        target.getUid(), target.getUsername(),
+                                        me.getUid(), myUsername, myAvatarId,
+                                        target.getUid(), target.getUsername(), target.getAvatarId(),
                                         "pending");
 
                                 // request id = fromUid_toUid, prevents duplicate requests
@@ -116,11 +118,13 @@ public class FriendManager {
         Map<String, Object> forMe = new HashMap<>();
         forMe.put("uid", req.getFromUid());
         forMe.put("username", req.getFromUsername());
+        forMe.put("avatarId", req.getFromAvatarId());
 
         // friend entry in THEIR (the sender's) list -> I become their friend
         Map<String, Object> forThem = new HashMap<>();
         forThem.put("uid", req.getToUid());
         forThem.put("username", req.getToUsername());
+        forThem.put("avatarId", req.getToAvatarId());
 
         db.collection(FRIENDS).document(req.getToUid())
                 .collection("list").document(req.getFromUid()).set(forMe)
@@ -166,6 +170,8 @@ public class FriendManager {
                         UserProfile p = new UserProfile();
                         p.setUid(doc.getString("uid"));
                         p.setUsername(doc.getString("username"));
+                        Long avatarLong = doc.getLong("avatarId");
+                        p.setAvatarId(avatarLong != null ? avatarLong.intValue() : 0);
                         list.add(p);
                     });
                     callback.onResult(list);

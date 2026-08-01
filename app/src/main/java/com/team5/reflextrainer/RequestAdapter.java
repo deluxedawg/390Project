@@ -3,6 +3,7 @@ package com.team5.reflextrainer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,6 +38,7 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.VH> {
     public void onBindViewHolder(@NonNull VH h, int position) {
         FriendRequest req = requests.get(position);
         h.name.setText(req.getFromUsername());
+        h.avatar.setImageResource(Avatars.resFor(req.getFromAvatarId()));
         h.accept.setOnClickListener(v -> listener.onAccept(req));
         h.reject.setOnClickListener(v -> listener.onReject(req));
     }
@@ -46,10 +48,12 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.VH> {
 
     static class VH extends RecyclerView.ViewHolder {
         TextView name;
+        ImageView avatar;
         View accept, reject;
         VH(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.tvRequestName);
+            avatar = itemView.findViewById(R.id.ivRequestAvatar);
             accept = itemView.findViewById(R.id.btnAccept);
             reject = itemView.findViewById(R.id.btnReject);
         }

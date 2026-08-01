@@ -38,6 +38,7 @@
         <activity android:name=".HistoryActivity" android:exported="false" />
         <activity android:name=".LeaderboardActivity" android:exported="false" />
         <activity android:name=".ProfileActivity" android:exported="false" />
+        <activity android:name=".AchievementsActivity" android:exported="false" />
         <activity android:name=".AddFriendActivity" android:exported="false" />
         <activity android:name=".FriendsActivity" android:exported="false" />
         <activity android:name=".LevelSelectActivity" android:exported="false" />

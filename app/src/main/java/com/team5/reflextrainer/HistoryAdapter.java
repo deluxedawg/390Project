@@ -37,9 +37,23 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder h, int position) {
         TrainingSession s = sessions.get(position);
         h.tvDifficulty.setText(s.getDifficulty());
+        h.tvDifficulty.setTextColor(colorForDifficulty(h.itemView, s.getDifficulty()));
         h.tvDate.setText(dateFormat.format(new Date(s.getTimestamp()))
                 + "  ·  " + s.getCorrectRounds() + "/" + s.getTotalRounds() + " correct");
         h.tvReaction.setText("avg " + s.getAvgReactionMs() + " ms");
+    }
+
+    /** Mirrors the Easy/Medium/Hard go-set-hold colors used on Level Select. */
+    private int colorForDifficulty(View anchor, String difficulty) {
+        int colorRes;
+        if ("Easy".equalsIgnoreCase(difficulty)) {
+            colorRes = R.color.accent;
+        } else if ("Hard".equalsIgnoreCase(difficulty)) {
+            colorRes = R.color.danger;
+        } else {
+            colorRes = R.color.color_set;
+        }
+        return anchor.getContext().getColor(colorRes);
     }
 
     @Override

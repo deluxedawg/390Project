@@ -7,33 +7,26 @@
     android:padding="24dp">
 
     <TextView
+        style="@style/TextAppearance.ReflexTrainer.Eyebrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="CHALLENGES"
-        android:textColor="@color/text_secondary"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.15"
         android:layout_marginTop="8dp"/>
 
     <TextView
         android:id="@+id/tvRecord"
+        style="@style/TextAppearance.ReflexTrainer.Display"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/text_primary"
         android:textSize="24sp"
-        android:textStyle="bold"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="20dp"/>
 
     <TextView
+        style="@style/TextAppearance.ReflexTrainer.Eyebrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="INCOMING"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.15"
+        android:text="Incoming"
         android:layout_marginBottom="8dp"/>
 
     <TextView
@@ -42,6 +35,8 @@
         android:layout_height="wrap_content"
         android:text="No challenges waiting."
         android:textColor="@color/text_secondary"
+        android:gravity="center"
+        android:paddingVertical="16dp"
         android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -50,13 +45,10 @@
         android:layout_height="wrap_content"/>
 
     <TextView
+        style="@style/TextAppearance.ReflexTrainer.Eyebrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="COMPLETED"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.15"
+        android:text="Completed"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="8dp"/>
 
@@ -66,6 +58,8 @@
         android:layout_height="wrap_content"
         android:text="No completed challenges yet."
         android:textColor="@color/text_secondary"
+        android:gravity="center"
+        android:paddingVertical="16dp"
         android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView

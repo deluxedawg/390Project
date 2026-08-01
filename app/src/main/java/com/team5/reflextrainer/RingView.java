@@ -20,11 +20,11 @@ public class RingView extends View {
         super(c, a);
         targetPaint.setStyle(Paint.Style.STROKE);
         targetPaint.setStrokeWidth(6f);
-        targetPaint.setColor(Color.parseColor("#8A94A6"));   // grey target
+        targetPaint.setColor(Color.parseColor("#8C96A6"));   // grey target
 
         ringPaint.setStyle(Paint.Style.STROKE);
         ringPaint.setStrokeWidth(10f);
-        ringPaint.setColor(Color.parseColor("#00E5A0"));     // green shrinking ring
+        ringPaint.setColor(Color.parseColor("#29FF88"));     // green shrinking ring, closes in on the beat
     }
 
     public void setProgress(float p) {

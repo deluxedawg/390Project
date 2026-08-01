@@ -44,13 +44,13 @@ public class CompletedChallengeAdapter
 
         if (c.getWinnerUid() == null || c.getWinnerUid().isEmpty()) {
             h.outcome.setText("TIE");
-            h.outcome.setTextColor(Color.parseColor("#8A94A6"));
+            h.outcome.setTextColor(Color.parseColor("#8C96A6"));
         } else if (myUid.equals(c.getWinnerUid())) {
             h.outcome.setText("WON");
-            h.outcome.setTextColor(Color.parseColor("#00E5A0"));
+            h.outcome.setTextColor(Color.parseColor("#29FF88"));
         } else {
             h.outcome.setText("LOST");
-            h.outcome.setTextColor(Color.parseColor("#FF5252"));
+            h.outcome.setTextColor(Color.parseColor("#FF4557"));
         }
     }
 

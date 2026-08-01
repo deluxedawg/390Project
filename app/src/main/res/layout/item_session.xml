@@ -41,12 +41,11 @@
 
         <TextView
             android:id="@+id/tvReaction"
+            style="@style/TextAppearance.ReflexTrainer.Readout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/text_primary"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:fontFamily="monospace"/>
+            android:textSize="18sp"/>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

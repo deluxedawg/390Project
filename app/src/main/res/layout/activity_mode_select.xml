@@ -8,13 +8,10 @@
     android:padding="24dp">
 
     <TextView
+        style="@style/TextAppearance.ReflexTrainer.Eyebrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TRAINING MODE"
-        android:textColor="@color/text_secondary"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.15"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"/>
 
@@ -26,7 +23,7 @@
         android:textSize="20sp"
         android:layout_marginBottom="32dp"/>
 
-    <!-- REACTION -->
+    <!-- REACTION: accented go-green, this is the "press now" drill -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardReaction"
         android:layout_width="match_parent"
@@ -41,26 +38,38 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="24dp">
-            <TextView
-                android:layout_width="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="match_parent"
+                android:background="@color/accent"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Reaction"
-                android:textColor="@color/accent"
-                android:textSize="24sp"
-                android:textStyle="bold"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="React to the signal as fast as you can"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp"/>
+                android:orientation="vertical"
+                android:padding="24dp">
+                <TextView
+                    style="@style/TextAppearance.ReflexTrainer.Display"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Reaction"
+                    android:textColor="@color/accent"
+                    android:textSize="24sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="React to the signal as fast as you can"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:layout_marginTop="6dp"/>
+            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- RHYTHM -->
+    <!-- RHYTHM: accented set-amber, this is the "stay on tempo" drill -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardRhythm"
         android:layout_width="match_parent"
@@ -75,22 +84,34 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="24dp">
-            <TextView
-                android:layout_width="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="match_parent"
+                android:background="@color/color_set"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Rhythm"
-                android:textColor="@color/accent"
-                android:textSize="24sp"
-                android:textStyle="bold"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tap in time with the beat"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp"
-                android:layout_marginTop="4dp"/>
+                android:orientation="vertical"
+                android:padding="24dp">
+                <TextView
+                    style="@style/TextAppearance.ReflexTrainer.Display"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rhythm"
+                    android:textColor="@color/color_set"
+                    android:textSize="24sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tap in time with the beat"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:layout_marginTop="6dp"/>
+            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

@@ -7,29 +7,26 @@
     android:padding="24dp">
 
     <TextView
+        style="@style/TextAppearance.ReflexTrainer.Eyebrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="SELECT DIFFICULTY"
-        android:textColor="@color/text_secondary"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.15"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_marginTop="8dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="How much time to react"
+        android:textColor="@color/text_primary"
+        android:textSize="20sp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="20dp"/>
+
+    <TextView
+        style="@style/TextAppearance.ReflexTrainer.Eyebrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="ROUNDS"
-        android:textColor="@color/text_secondary"
-        android:textSize="13sp"
-        android:textStyle="bold"
-        android:letterSpacing="0.15"
-        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"/>
 
     <com.google.android.material.button.MaterialButtonToggleGroup
@@ -82,22 +79,34 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
-            <TextView
-                android:layout_width="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="match_parent"
+                android:background="@color/accent"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Easy"
-                android:textColor="@color/accent"
-                android:textSize="22sp"
-                android:textStyle="bold"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="2.0 s to react"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp"
-                android:layout_marginTop="2dp"/>
+                android:orientation="vertical"
+                android:padding="20dp">
+                <TextView
+                    style="@style/TextAppearance.ReflexTrainer.Display"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Easy"
+                    android:textColor="@color/accent"
+                    android:textSize="22sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2.0 s to react"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -117,22 +126,34 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
-            <TextView
-                android:layout_width="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="match_parent"
+                android:background="@color/color_set"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Medium"
-                android:textColor="@color/accent"
-                android:textSize="22sp"
-                android:textStyle="bold"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1.0 s to react"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp"
-                android:layout_marginTop="2dp"/>
+                android:orientation="vertical"
+                android:padding="20dp">
+                <TextView
+                    style="@style/TextAppearance.ReflexTrainer.Display"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Medium"
+                    android:textColor="@color/color_set"
+                    android:textSize="22sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1.0 s to react"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -152,22 +173,34 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
-            <TextView
-                android:layout_width="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="match_parent"
+                android:background="@color/danger"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Hard"
-                android:textColor="@color/accent"
-                android:textSize="22sp"
-                android:textStyle="bold"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0.5 s to react"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp"
-                android:layout_marginTop="2dp"/>
+                android:orientation="vertical"
+                android:padding="20dp">
+                <TextView
+                    style="@style/TextAppearance.ReflexTrainer.Display"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hard"
+                    android:textColor="@color/danger"
+                    android:textSize="22sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0.5 s to react"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

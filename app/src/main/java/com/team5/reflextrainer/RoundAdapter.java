@@ -37,8 +37,8 @@ public class RoundAdapter extends RecyclerView.Adapter<RoundAdapter.VH> {
         h.time.setText(t + " ms");
         // highlight the best round
         h.time.setTextColor(t == best
-                ? Color.parseColor("#00E5A0")
-                : Color.parseColor("#F5F7FA"));
+                ? Color.parseColor("#29FF88")
+                : Color.parseColor("#F4F6F5"));
     }
 
     @Override

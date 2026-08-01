@@ -1,0 +1,15 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+
+    <!-- badge: bolt -->
+    <path
+        android:fillColor="@color/accent"
+        android:pathData="M0,20 A20,20 0 1,1 40,20 A20,20 0 1,1 0,20 Z"/>
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M22,11 L14,22 L19,22 L17,29 L26,18 L21,18 Z"/>
+</vector>
