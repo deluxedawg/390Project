@@ -4,6 +4,7 @@
     <string name="nav_history">History</string>
     <string name="nav_leaderboard">Leaderboard</string>
     <string name="nav_challenges">Challenges</string>
+    <string name="nav_messages">Messages</string>
     <string name="nav_profile">Profile</string>
     <string name="log_out">Log out</string>
     <string name="your_avatar">Your avatar</string>

@@ -36,7 +36,7 @@ public class ProfileActivity extends AppCompatActivity {
     private TrainingSessionRepository sessionRepository;
     private String currentUserId;
 
-    private boolean profileLoaded, sessionsLoaded, challengesLoaded, avatarFixApplied;
+    private boolean profileLoaded, sessionsLoaded, challengesLoaded, friendsLoaded, avatarFixApplied;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +55,8 @@ public class ProfileActivity extends AppCompatActivity {
                 findViewById(R.id.avatarCard2), findViewById(R.id.avatarCard3),
                 findViewById(R.id.avatarCard4), findViewById(R.id.avatarCard5),
                 findViewById(R.id.avatarCard6), findViewById(R.id.avatarCard7),
+                findViewById(R.id.avatarCard8), findViewById(R.id.avatarCard9),
+                findViewById(R.id.avatarCard10), findViewById(R.id.avatarCard11),
         };
         for (int i = 0; i < avatarCards.length; i++) {
             int avatarId = i;
@@ -162,18 +164,33 @@ public class ProfileActivity extends AppCompatActivity {
         new ChallengeManager().loadCompleted(new ChallengeManager.ListCallback() {
             @Override
             public void onResult(List<Challenge> challenges) {
-                boolean wonOne = false;
+                int wins = 0;
                 for (Challenge c : challenges) {
-                    if (currentUserId.equals(c.getWinnerUid())) { wonOne = true; break; }
+                    if (currentUserId.equals(c.getWinnerUid())) wins++;
                 }
-                earned[7] = wonOne;
+                earned[7] = wins >= 1;
+                earned[10] = wins >= 5;
                 refreshAvatarSelection();
                 challengesLoaded = true;
                 checkEquippedAvatar();
             }
             @Override
             public void onError(String message) {
-                challengesLoaded = true;   // leave the Challenger badge as-is, don't block the check forever
+                challengesLoaded = true;   // leave the Challenger/Rival Slayer badges as-is, don't block the check forever
+                checkEquippedAvatar();
+            }
+        });
+        new FriendManager().loadFriends(new FriendManager.FriendsCallback() {
+            @Override
+            public void onResult(List<UserProfile> friends) {
+                earned[11] = !friends.isEmpty();
+                refreshAvatarSelection();
+                friendsLoaded = true;
+                checkEquippedAvatar();
+            }
+            @Override
+            public void onError(String message) {
+                friendsLoaded = true;   // leave the Social Butterfly badge as-is, don't block the check forever
                 checkEquippedAvatar();
             }
         });
@@ -186,7 +203,7 @@ public class ProfileActivity extends AppCompatActivity {
      * to the default and save that correction.
      */
     private void checkEquippedAvatar() {
-        if (avatarFixApplied || !profileLoaded || !sessionsLoaded || !challengesLoaded) return;
+        if (avatarFixApplied || !profileLoaded || !sessionsLoaded || !challengesLoaded || !friendsLoaded) return;
         avatarFixApplied = true;
         if (currentAvatarId == 0 || Achievements.isAvatarUnlocked(currentAvatarId, earned)) return;
 

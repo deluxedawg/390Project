@@ -42,6 +42,10 @@ public class RegisterActivity extends AppCompatActivity {
                 register(username, email, pass);
             }
         });
+
+        View btnInfo = findViewById(R.id.btnInfo);
+        btnInfo.setOnClickListener(v -> startActivity(new Intent(this, AboutActivity.class)));
+        EdgeToEdge.applyTopInsetMargin(btnInfo);
     }
 
     // AUTH-1.3: validate before ever touching Firebase

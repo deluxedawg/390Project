@@ -24,7 +24,6 @@ public class LeaderboardManager {
         if (user == null || reactionMs <= 0) return;   // ignore invalid times
 
         String uid = user.getUid();
-        String name = (user.getEmail() != null) ? user.getEmail() : "Anonymous";
 
         db.collection(COLLECTION).document(uid).get()
                 .addOnSuccessListener(snapshot -> {
@@ -38,6 +37,10 @@ public class LeaderboardManager {
                     if (shouldWrite) {
                         db.collection("profiles").document(uid).get()
                                 .addOnSuccessListener(profileDoc -> {
+                                    String name = (profileDoc.exists() && profileDoc.getString("username") != null)
+                                            ? profileDoc.getString("username")
+                                            : (user.getEmail() != null ? user.getEmail() : "Anonymous");
+
                                     int avatarId = 0;
                                     Long avatarLong = profileDoc.getLong("avatarId");
                                     if (avatarLong != null) avatarId = avatarLong.intValue();

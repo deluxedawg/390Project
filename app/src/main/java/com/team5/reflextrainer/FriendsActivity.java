@@ -82,7 +82,10 @@ public class FriendsActivity extends AppCompatActivity {
             @Override
             public void onResult(List<UserProfile> friends) {
                 tvNoFriends.setVisibility(friends.isEmpty() ? View.VISIBLE : View.GONE);
-                rvFriends.setAdapter(new FriendAdapter(friends, friend -> promptChallenge(friend)));
+                rvFriends.setAdapter(new FriendAdapter(friends, new FriendAdapter.Listener() {
+                    @Override public void onChallenge(UserProfile friend) { promptChallenge(friend); }
+                    @Override public void onMessage(UserProfile friend) { openChat(friend); }
+                }));
             }
             @Override public void onError(String m) { toast(m); }
         });
@@ -93,6 +96,15 @@ public class FriendsActivity extends AppCompatActivity {
         Intent i = new Intent(this, LevelSelectActivity.class);
         i.putExtra("challengeToUid", friend.getUid());
         i.putExtra("challengeToUsername", friend.getUsername());
+        startActivity(i);
+    }
+
+    /** Open (or start) a 1:1 chat thread with this friend. */
+    private void openChat(UserProfile friend) {
+        Intent i = new Intent(this, ChatActivity.class);
+        i.putExtra(ChatActivity.EXTRA_OTHER_UID, friend.getUid());
+        i.putExtra(ChatActivity.EXTRA_OTHER_USERNAME, friend.getUsername());
+        i.putExtra(ChatActivity.EXTRA_OTHER_AVATAR_ID, friend.getAvatarId());
         startActivity(i);
     }
 

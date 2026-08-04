@@ -33,6 +33,11 @@ public class ProfileManager {
                 .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
+    /** Store this device's FCM token so a Cloud Function can push notifications to it. */
+    public void updateFcmToken(String uid, String token) {
+        db.collection(COLLECTION).document(uid).update("fcmToken", token);
+    }
+
     /** Load the profile for a given uid. */
     public void loadProfile(String uid, ProfileCallback callback) {
         db.collection(COLLECTION).document(uid).get()

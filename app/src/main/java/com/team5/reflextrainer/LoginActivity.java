@@ -33,6 +33,10 @@ public class LoginActivity extends AppCompatActivity {
 
         findViewById(R.id.tvGoRegister).setOnClickListener(v ->
                 startActivity(new Intent(this, RegisterActivity.class)));
+
+        View btnInfo = findViewById(R.id.btnInfo);
+        btnInfo.setOnClickListener(v -> startActivity(new Intent(this, AboutActivity.class)));
+        EdgeToEdge.applyTopInsetMargin(btnInfo);
     }
 
     // Session routing: if already logged in, skip straight to Home

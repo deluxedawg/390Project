@@ -1,0 +1,15 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+
+    <!-- badge: heart -->
+    <path
+        android:fillColor="@color/color_set"
+        android:pathData="M0,20 A20,20 0 1,1 40,20 A20,20 0 1,1 0,20 Z"/>
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M20,29 C20,29 10,22.5 10,15.5 C10,11.9 12.9,9 16.5,9 C18.3,9 19.9,9.9 20,12 C20.1,9.9 21.7,9 23.5,9 C27.1,9 30,11.9 30,15.5 C30,22.5 20,29 20,29 Z"/>
+</vector>

@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
 
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
@@ -33,6 +34,7 @@
 
         <activity android:name=".LoginActivity" android:exported="false" />
         <activity android:name=".RegisterActivity" android:exported="false" />
+        <activity android:name=".AboutActivity" android:exported="false" />
         <activity android:name=".MainActivity" android:exported="false" />
         <activity android:name=".TrainingActivity" android:exported="false" />
         <activity android:name=".HistoryActivity" android:exported="false" />
@@ -47,6 +49,14 @@
         <activity android:name=".ChallengeResultActivity" android:exported="false" />
         <activity android:name=".ModeSelectActivity" android:exported="false" />
         <activity android:name=".RhythmActivity" android:exported="false" />
+        <activity android:name=".InboxActivity" android:exported="false" />
+        <activity android:name=".ChatActivity" android:exported="false" />
+
+        <service android:name=".PushService" android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
 
     </application>
 </manifest>

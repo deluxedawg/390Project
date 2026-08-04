@@ -11,17 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.VH> {
+public class FriendPickerAdapter extends RecyclerView.Adapter<FriendPickerAdapter.VH> {
 
-    public interface Listener {
-        void onChallenge(UserProfile friend);
-        void onMessage(UserProfile friend);
-    }
+    public interface Listener { void onPick(UserProfile friend); }
 
     private final List<UserProfile> friends;
     private final Listener listener;
 
-    public FriendAdapter(List<UserProfile> friends, Listener listener) {
+    public FriendPickerAdapter(List<UserProfile> friends, Listener listener) {
         this.friends = friends;
         this.listener = listener;
     }
@@ -30,33 +27,28 @@ public class FriendAdapter extends RecyclerView.Adapter<FriendAdapter.VH> {
     @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_friend, parent, false);
+                .inflate(R.layout.item_friend_picker, parent, false);
         return new VH(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull VH h, int position) {
         UserProfile f = friends.get(position);
-        h.name.setText(f.getUsername());
+        h.username.setText(f.getUsername());
         h.avatar.setImageResource(Avatars.resFor(f.getAvatarId()));
-        h.challenge.setOnClickListener(v -> listener.onChallenge(f));
-        h.message.setOnClickListener(v -> listener.onMessage(f));
+        h.itemView.setOnClickListener(v -> listener.onPick(f));
     }
 
     @Override
     public int getItemCount() { return friends.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
-        TextView name;
         ImageView avatar;
-        View challenge;
-        View message;
+        TextView username;
         VH(@NonNull View itemView) {
             super(itemView);
-            name = itemView.findViewById(R.id.tvFriendName);
-            avatar = itemView.findViewById(R.id.ivFriendAvatar);
-            challenge = itemView.findViewById(R.id.btnChallenge);
-            message = itemView.findViewById(R.id.btnMessage);
+            avatar = itemView.findViewById(R.id.ivPickerAvatar);
+            username = itemView.findViewById(R.id.tvPickerUsername);
         }
     }
 }

@@ -26,6 +26,9 @@ public class RhythmLeaderboardManager {
                     String name = (doc.exists() && doc.getString("username") != null)
                             ? doc.getString("username") : user.getEmail();
 
+                    Long avatarLong = doc.getLong("avatarId");
+                    final int avatarId = (avatarLong != null) ? avatarLong.intValue() : 0;
+
                     db.collection(COLLECTION).document(user.getUid()).get()
                             .addOnSuccessListener(existing -> {
                                 Long prev = existing.exists() ? existing.getLong("bestReactionMs") : null;
@@ -33,6 +36,7 @@ public class RhythmLeaderboardManager {
                                     Map<String, Object> entry = new HashMap<>();
                                     entry.put("displayName", name);
                                     entry.put("bestReactionMs", avgOffsetMs);
+                                    entry.put("avatarId", avatarId);
                                     db.collection(COLLECTION).document(user.getUid()).set(entry);
                                 }
                             });

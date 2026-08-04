@@ -1,0 +1,36 @@
+// Reference snippet for the new chat feature only.
+//
+// This repo's Firestore rules are currently managed in the Firebase console
+// (Firestore > Rules), not deployed from source — there's no existing
+// firestore.rules file to build on, and this one is intentionally NOT wired
+// into firebase.json, so `firebase deploy` will never touch rules and can't
+// clobber whatever you already have configured for profiles/friends/
+// friendRequests/challenges/leaderboard.
+//
+// To use this: open the Firebase console rules editor, paste the
+// `match /conversations/{conversationId}` block below into your existing
+// rules (inside the same `service cloud.firestore { match /databases/{db}/documents { ... } }`
+// wrapper you already have), and Publish. Don't deploy this file as-is via
+// `firebase deploy --only firestore:rules` — it only defines this one
+// collection and would deny access to everything else in your database.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /conversations/{conversationId} {
+      allow read, write: if request.auth != null
+          && request.auth.uid in resource.data.participants;
+      allow create: if request.auth != null
+          && request.auth.uid in request.resource.data.participants;
+
+      match /messages/{messageId} {
+        allow read: if request.auth != null
+            && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participants;
+        allow create: if request.auth != null
+            && request.auth.uid == request.resource.data.senderUid
+            && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participants;
+      }
+    }
+
+  }
+}

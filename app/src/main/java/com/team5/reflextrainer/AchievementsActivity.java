@@ -47,6 +47,7 @@ public class AchievementsActivity extends AppCompatActivity {
 
         loadSessionBadges();
         loadChallengeBadge();
+        loadFriendBadge();
         refreshUi();
     }
 
@@ -64,15 +65,29 @@ public class AchievementsActivity extends AppCompatActivity {
         new ChallengeManager().loadCompleted(new ChallengeManager.ListCallback() {
             @Override
             public void onResult(List<Challenge> challenges) {
-                boolean wonOne = false;
+                int wins = 0;
                 for (Challenge c : challenges) {
-                    if (userId.equals(c.getWinnerUid())) { wonOne = true; break; }
+                    if (userId.equals(c.getWinnerUid())) wins++;
                 }
-                earned[7] = wonOne;
+                earned[7] = wins >= 1;
+                earned[10] = wins >= 5;
                 refreshUi();
             }
             @Override
-            public void onError(String message) { /* leave the Challenger badge as-is */ }
+            public void onError(String message) { /* leave the Challenger/Rival Slayer badges as-is */ }
+        });
+    }
+
+    private void loadFriendBadge() {
+        if (userId == null) return;
+        new FriendManager().loadFriends(new FriendManager.FriendsCallback() {
+            @Override
+            public void onResult(List<UserProfile> friends) {
+                earned[11] = !friends.isEmpty();
+                refreshUi();
+            }
+            @Override
+            public void onError(String message) { /* leave the Social Butterfly badge as-is */ }
         });
     }
 

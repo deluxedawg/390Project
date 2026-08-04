@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.List;
 
@@ -55,6 +56,9 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         }
     });
 
+    private final ActivityResultLauncher<String> notificationPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), granted -> { });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
                 findViewById(R.id.badge2), findViewById(R.id.badge3),
                 findViewById(R.id.badge4), findViewById(R.id.badge5),
                 findViewById(R.id.badge6), findViewById(R.id.badge7),
+                findViewById(R.id.badge8), findViewById(R.id.badge9),
+                findViewById(R.id.badge10), findViewById(R.id.badge11),
         };
         View.OnClickListener openAchievements = v ->
                 startActivity(new Intent(this, AchievementsActivity.class));
@@ -90,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
 
         loadStreak();
         loadChallengeBadge();
+        loadFriendBadge();
 
         tvWelcome = findViewById(R.id.tvWelcome);
         ivHomeAvatar = findViewById(R.id.ivHomeAvatar);
@@ -125,8 +132,30 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         challenges.setOnClickListener(v ->
                 startActivity(new Intent(this, ChallengesActivity.class)));
 
+        View messages = findViewById(R.id.btnMessages);
+        messages.setOnClickListener(v ->
+                startActivity(new Intent(this, InboxActivity.class)));
+
         ESPBluetoothManager.getInstance().setListener(this);
         checkPermissionsAndConnect();
+
+        setUpMessagingNotifications(user);
+    }
+
+    /** Notification channel + runtime permission (Android 13+) + FCM token sync for chat push. */
+    private void setUpMessagingNotifications(FirebaseUser user) {
+        NotificationChannels.ensureMessagesChannel(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                        != PackageManager.PERMISSION_GRANTED) {
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+        }
+
+        if (user != null) {
+            FirebaseMessaging.getInstance().getToken().addOnSuccessListener(token ->
+                    new ProfileManager().updateFcmToken(user.getUid(), token));
+        }
     }
 
     @Override
@@ -137,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         }
         loadStreak();
         loadChallengeBadge();
+        loadFriendBadge();
         loadProfileHeader(FirebaseAuth.getInstance().getCurrentUser());
     }
 
@@ -194,15 +224,29 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         new ChallengeManager().loadCompleted(new ChallengeManager.ListCallback() {
             @Override
             public void onResult(List<Challenge> challenges) {
-                boolean wonOne = false;
+                int wins = 0;
                 for (Challenge c : challenges) {
-                    if (currentUserId.equals(c.getWinnerUid())) { wonOne = true; break; }
+                    if (currentUserId.equals(c.getWinnerUid())) wins++;
                 }
-                badgeEarned[7] = wonOne;
+                badgeEarned[7] = wins >= 1;
+                badgeEarned[10] = wins >= 5;
                 refreshBadgeUi();
             }
             @Override
-            public void onError(String message) { /* leave the Challenger badge as-is */ }
+            public void onError(String message) { /* leave the Challenger/Rival Slayer badges as-is */ }
+        });
+    }
+
+    private void loadFriendBadge() {
+        if (currentUserId == null || tvBadgeCount == null) return;
+        new FriendManager().loadFriends(new FriendManager.FriendsCallback() {
+            @Override
+            public void onResult(List<UserProfile> friends) {
+                badgeEarned[11] = !friends.isEmpty();
+                refreshBadgeUi();
+            }
+            @Override
+            public void onError(String message) { /* leave the Social Butterfly badge as-is */ }
         });
     }
 
