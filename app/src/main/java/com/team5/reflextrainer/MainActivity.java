@@ -14,6 +14,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 
+import com.team5.reflextrainer.data.TrainingMode;
 import com.team5.reflextrainer.data.TrainingSessionRepository;
 import com.team5.reflextrainer.hardware.ESPBluetoothManager;
 import com.team5.reflextrainer.hardware.SensorMessage;
@@ -23,7 +24,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements ESPBluetoothManager.Listener {
 
@@ -36,8 +40,10 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
     private ImageView[] badgeViews;
     private TextView tvBadgeCount;
     private final boolean[] badgeEarned = new boolean[Achievements.COUNT];
+    private final Set<Integer> persistedBadges = new HashSet<>();
 
     private TrainingSessionRepository sessionRepository;
+    private final ProfileManager profileManager = new ProfileManager();
     private String currentUserId;
 
     private static final float LIT = 1f;
@@ -94,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         findViewById(R.id.cardBadges).setOnClickListener(openAchievements);
         refreshBadgeUi();
 
+        loadPersistedBadges();
         loadStreak();
         loadChallengeBadge();
         loadFriendBadge();
@@ -164,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         if(!ESPBluetoothManager.getInstance().isConnected()){
             checkPermissionsAndConnect();
         }
+        loadPersistedBadges();
         loadStreak();
         loadChallengeBadge();
         loadFriendBadge();
@@ -197,11 +205,14 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
 
     private void loadStreak() {
         if (currentUserId == null || tvStreak == null) return;
-        sessionRepository.getTrainingHistoryForUser(currentUserId, sessions -> {
-            Achievements.Streak streak = Achievements.computeStreak(sessions);
+        // streak counts any training mode; the session-content badges stay Reaction-scoped.
+        sessionRepository.getTrainingHistoryForUser(currentUserId, allSessions -> {
+            Achievements.Streak streak = Achievements.computeStreak(allSessions);
             updateStreakUi(streak);
-            Achievements.computeSessionBadges(sessions, streak.days, badgeEarned);
-            refreshBadgeUi();
+            sessionRepository.getTrainingHistoryForUserAndMode(currentUserId, TrainingMode.REACTION.label, reactionSessions -> {
+                Achievements.computeSessionBadges(reactionSessions, streak.days, badgeEarned);
+                refreshBadgeUi();
+            });
         });
     }
 
@@ -219,6 +230,17 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
 
     // ===================== badges =====================
 
+    private void loadPersistedBadges() {
+        if (currentUserId == null) return;
+        profileManager.loadEarnedBadges(currentUserId, badgeIndices -> {
+            for (int i : badgeIndices) {
+                if (i >= 0 && i < badgeEarned.length) badgeEarned[i] = true;
+            }
+            persistedBadges.addAll(badgeIndices);
+            refreshBadgeUi();
+        });
+    }
+
     private void loadChallengeBadge() {
         if (currentUserId == null || tvBadgeCount == null) return;
         new ChallengeManager().loadCompleted(new ChallengeManager.ListCallback() {
@@ -228,8 +250,8 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
                 for (Challenge c : challenges) {
                     if (currentUserId.equals(c.getWinnerUid())) wins++;
                 }
-                badgeEarned[7] = wins >= 1;
-                badgeEarned[10] = wins >= 5;
+                badgeEarned[7] = badgeEarned[7] || wins >= 1;
+                badgeEarned[10] = badgeEarned[10] || wins >= 5;
                 refreshBadgeUi();
             }
             @Override
@@ -242,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         new FriendManager().loadFriends(new FriendManager.FriendsCallback() {
             @Override
             public void onResult(List<UserProfile> friends) {
-                badgeEarned[11] = !friends.isEmpty();
+                badgeEarned[11] = badgeEarned[11] || !friends.isEmpty();
                 refreshBadgeUi();
             }
             @Override
@@ -258,6 +280,19 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
             if (badgeEarned[i]) earnedCount++;
         }
         tvBadgeCount.setText(earnedCount + " of " + badgeViews.length + " unlocked");
+        syncNewlyEarnedBadges();
+    }
+
+    /** Pushes any badges that just flipped true and aren't in Firestore yet, so they survive a reinstall. */
+    private void syncNewlyEarnedBadges() {
+        if (currentUserId == null) return;
+        List<Integer> newlyEarned = new ArrayList<>();
+        for (int i = 0; i < badgeEarned.length; i++) {
+            if (badgeEarned[i] && !persistedBadges.contains(i)) newlyEarned.add(i);
+        }
+        if (newlyEarned.isEmpty()) return;
+        persistedBadges.addAll(newlyEarned);
+        profileManager.addEarnedBadges(currentUserId, newlyEarned);
     }
 
     private void checkPermissionsAndConnect() {

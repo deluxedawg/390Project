@@ -15,9 +15,11 @@ public class TrainingSession {
     private int correctRounds;
     private String difficulty;
     private long timestamp;
+    private String mode;
 
     public TrainingSession(String userId, int avgReactionMs, int bestReactionMs,
-                           int totalRounds, int correctRounds, String difficulty, long timestamp) {
+                           int totalRounds, int correctRounds, String difficulty, long timestamp,
+                           String mode) {
         this.userId = userId;
         this.avgReactionMs = avgReactionMs;
         this.bestReactionMs = bestReactionMs;
@@ -25,6 +27,7 @@ public class TrainingSession {
         this.correctRounds = correctRounds;
         this.difficulty = difficulty;
         this.timestamp = timestamp;
+        this.mode = mode;
     }
 
     public long getSessionId() { return sessionId; }
@@ -43,4 +46,6 @@ public class TrainingSession {
     public void setDifficulty(String v) { this.difficulty = v; }
     public long getTimestamp() { return timestamp; }
     public void setTimestamp(long v) { this.timestamp = v; }
+    public String getMode() { return mode; }
+    public void setMode(String v) { this.mode = v; }
 }

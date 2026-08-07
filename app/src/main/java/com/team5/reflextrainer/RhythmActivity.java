@@ -11,6 +11,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.team5.reflextrainer.data.TrainingMode;
+import com.team5.reflextrainer.data.TrainingSessionRepository;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +24,9 @@ public class RhythmActivity extends AppCompatActivity {
     private TextView tvPhase, tvInstruction, tvFeedback;
     private Button btnAction;
     private RingView ringView;
+
+    private TrainingSessionRepository sessionRepository;
+    private String currentUserId;
 
     private MediaPlayer mediaPlayer;
     private SoundPool soundPool;
@@ -55,6 +63,10 @@ public class RhythmActivity extends AppCompatActivity {
         ringView = findViewById(R.id.ringView);
 
         ringView.setOnClickListener(v -> onTap());
+
+        sessionRepository = new TrainingSessionRepository(this);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        currentUserId = (user != null) ? user.getUid() : null;
 
         // our locked-in track: 110 BPM, first beat at 4450ms, 32 beats
         track = new BeatTrack("Track 1", 110, 4450, 55, R.raw.track1);
@@ -216,12 +228,14 @@ public class RhythmActivity extends AppCompatActivity {
         scoring = false;
 
         int avg;
+        int best = 0;
         if (offsets.isEmpty()) {
             avg = 0;
         } else {
-            long sum = 0;
-            for (long o : offsets) sum += o;
+            long sum = 0, min = Long.MAX_VALUE;
+            for (long o : offsets) { sum += o; if (o < min) min = o; }
             avg = (int) (sum / offsets.size());
+            best = (int) min;
         }
 
         int hits = offsets.size();
@@ -232,6 +246,11 @@ public class RhythmActivity extends AppCompatActivity {
             new RhythmLeaderboardManager().submitScore(avg);
         } else {
             tvFeedback.setText("No beats hit");
+        }
+
+        if (currentUserId != null) {
+            sessionRepository.saveSession(currentUserId, avg, best, beatTimes.size(), hits,
+                    track.name, TrainingMode.RHYTHM.label);
         }
 
         btnAction.setText("Done");

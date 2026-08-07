@@ -11,119 +11,27 @@
         style="@style/TextAppearance.ReflexTrainer.Eyebrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TRAINING MODE"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"/>
+        android:text="FATIGUE TRAINING"
+        android:layout_marginTop="8dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="How do you want to train?"
+        android:text="What do you want to train?"
         android:textColor="@color/text_primary"
         android:textSize="20sp"
-        android:layout_marginBottom="32dp"/>
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="24dp"/>
 
-    <!-- REACTION: accented go-green, this is the "press now" drill -->
+    <!-- CARDIO -->
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardReaction"
+        android:id="@+id/cardCardio"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardBackgroundColor="@color/surface"
-        app:cardCornerRadius="18dp"
+        app:cardCornerRadius="16dp"
         app:cardElevation="0dp"
-        android:layout_marginBottom="16dp"
-        android:clickable="true"
-        android:focusable="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <View
-                android:layout_width="4dp"
-                android:layout_height="match_parent"
-                android:background="@color/accent"/>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp">
-                <TextView
-                    style="@style/TextAppearance.ReflexTrainer.Display"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Reaction"
-                    android:textColor="@color/accent"
-                    android:textSize="24sp"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="React to the signal as fast as you can"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp"
-                    android:layout_marginTop="6dp"/>
-            </LinearLayout>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-    <!-- RHYTHM: accented set-amber, this is the "stay on tempo" drill -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardRhythm"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/surface"
-        app:cardCornerRadius="18dp"
-        app:cardElevation="0dp"
-        android:layout_marginBottom="16dp"
-        android:clickable="true"
-        android:focusable="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <View
-                android:layout_width="4dp"
-                android:layout_height="match_parent"
-                android:background="@color/color_set"/>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp">
-                <TextView
-                    style="@style/TextAppearance.ReflexTrainer.Display"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Rhythm"
-                    android:textColor="@color/color_set"
-                    android:textSize="24sp"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tap in time with the beat"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp"
-                    android:layout_marginTop="6dp"/>
-            </LinearLayout>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-    <!-- FATIGUE: accented danger-red, this is the "train, then react" drill -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardFatigue"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/surface"
-        app:cardCornerRadius="18dp"
-        app:cardElevation="0dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="14dp"
         android:clickable="true"
         android:focusable="true">
 
@@ -142,21 +50,159 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="24dp">
+                android:padding="20dp">
                 <TextView
                     style="@style/TextAppearance.ReflexTrainer.Display"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Fatigue Training"
+                    android:text="Cardio"
                     android:textColor="@color/danger"
-                    android:textSize="24sp"/>
+                    android:textSize="22sp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Train, then react — see how fatigue affects your reflexes"
+                    android:text="Get the heart rate up between rounds"
                     android:textColor="@color/text_secondary"
                     android:textSize="14sp"
-                    android:layout_marginTop="6dp"/>
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- CORE -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardCore"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/surface"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        android:layout_marginBottom="14dp"
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="match_parent"
+                android:background="@color/color_set"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+                <TextView
+                    style="@style/TextAppearance.ReflexTrainer.Display"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Core"
+                    android:textColor="@color/color_set"
+                    android:textSize="22sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Planks and ab work"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- LEGS -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardLegs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/surface"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        android:layout_marginBottom="14dp"
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="match_parent"
+                android:background="@color/accent"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+                <TextView
+                    style="@style/TextAppearance.ReflexTrainer.Display"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Legs"
+                    android:textColor="@color/accent"
+                    android:textSize="22sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Squats, lunges, and wall sits"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- ARMS -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardArms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/surface"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        android:layout_marginBottom="14dp"
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="match_parent"
+                android:background="@color/accent_dark"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+                <TextView
+                    style="@style/TextAppearance.ReflexTrainer.Display"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Arms"
+                    android:textColor="@color/accent_dark"
+                    android:textSize="22sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Push-ups, dips, and more"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp"/>
             </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

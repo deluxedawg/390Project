@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.team5.reflextrainer.data.TrainingMode;
 import com.team5.reflextrainer.data.TrainingSessionRepository;
 import com.team5.reflextrainer.hardware.ESPBluetoothManager;
 import com.team5.reflextrainer.hardware.SensorMessage;
@@ -170,7 +171,8 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
         final int avg = reactionTimes.isEmpty() ? 0 : sum / reactionTimes.size();
         final int best = reactionTimes.isEmpty() ? 0 : bestCalc;
 
-        sessionRepository.saveSession(currentUserId, avg, best, totalRounds, correctCount, difficulty);
+        sessionRepository.saveSession(currentUserId, avg, best, totalRounds, correctCount,
+                difficulty, TrainingMode.REACTION.label);
 
         if (avg > 0) {
             new LeaderboardManager().submitScore(avg);

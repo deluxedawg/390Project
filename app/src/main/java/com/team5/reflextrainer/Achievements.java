@@ -91,9 +91,13 @@ public final class Achievements {
     /**
      * Fills the session/streak-derived badge indices (0-2, 3, 4-6, 8-9). Indices 7, 10
      * (challenge-based) and 11 (friend-based) need separate queries elsewhere.
+     *
+     * OR-merges into whatever's already in {@code out} rather than overwriting it, so a badge
+     * seeded as already-earned (e.g. restored from a Firestore backup after local session
+     * history was wiped by a reinstall) can't be recomputed back to false.
      */
     public static void computeSessionBadges(List<TrainingSession> sessions, int streakDays, boolean[] out) {
-        out[0] = !sessions.isEmpty();
+        out[0] = out[0] || !sessions.isEmpty();
 
         int totalRounds = 0;
         boolean sub300 = false, sub200 = false, sub150 = false, perfect = false;
@@ -104,13 +108,13 @@ public final class Achievements {
             if (s.getBestReactionMs() > 0 && s.getBestReactionMs() < 150) sub150 = true;
             if (s.getTotalRounds() > 0 && s.getCorrectRounds() == s.getTotalRounds()) perfect = true;
         }
-        out[1] = sub300;
-        out[2] = sub200;
-        out[3] = perfect;
-        out[4] = totalRounds >= 100;
-        out[5] = streakDays >= 3;
-        out[6] = streakDays >= 7;
-        out[8] = streakDays >= 14;
-        out[9] = sub150;
+        out[1] = out[1] || sub300;
+        out[2] = out[2] || sub200;
+        out[3] = out[3] || perfect;
+        out[4] = out[4] || totalRounds >= 100;
+        out[5] = out[5] || streakDays >= 3;
+        out[6] = out[6] || streakDays >= 7;
+        out[8] = out[8] || streakDays >= 14;
+        out[9] = out[9] || sub150;
     }
 }

@@ -18,6 +18,9 @@ public interface TrainingSessionDao {
     @Query("SELECT * FROM training_sessions WHERE userId = :userId ORDER BY timestamp DESC")
     List<TrainingSession> getSessionsForUser(String userId);
 
+    @Query("SELECT * FROM training_sessions WHERE userId = :userId AND mode = :mode ORDER BY timestamp DESC")
+    List<TrainingSession> getSessionsForUserAndMode(String userId, String mode);
+
     @Delete
     void deleteTrainingSession(TrainingSession session);
 

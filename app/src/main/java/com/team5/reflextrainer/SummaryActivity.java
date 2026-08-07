@@ -19,6 +19,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.team5.reflextrainer.data.TrainingMode;
 import com.team5.reflextrainer.data.TrainingSession;
 import com.team5.reflextrainer.data.TrainingSessionRepository;
 
@@ -166,7 +167,9 @@ public class SummaryActivity extends AppCompatActivity {
         }
 
         TrainingSessionRepository repo = new TrainingSessionRepository(this);
-        repo.getTrainingHistoryForUser(user.getUid(), sessions -> {
+        // Reaction-only: this screen only follows a Reaction session, and comparing against
+        // Rhythm/Fatigue numbers would feed the coach apples-to-oranges data.
+        repo.getTrainingHistoryForUserAndMode(user.getUid(), TrainingMode.REACTION.label, sessions -> {
             // TrainingActivity saves the session BEFORE launching this screen,
             // so the newest history entry IS this session. Drop it so the coach
             // compares against genuinely previous sessions.

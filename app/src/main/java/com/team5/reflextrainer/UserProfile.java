@@ -1,10 +1,13 @@
 package com.team5.reflextrainer;
 
+import java.util.List;
+
 public class UserProfile {
     private String uid;
     private String username;
     private String email;
     private int avatarId;   // index into Avatars.DRAWABLES; 0 for existing accounts
+    private List<Integer> earnedBadges;   // indices into Achievements.NAMES; null until the first badge syncs
 
     public UserProfile() { }   // required by Firestore
 
@@ -25,4 +28,7 @@ public class UserProfile {
 
     public int getAvatarId() { return avatarId; }
     public void setAvatarId(int avatarId) { this.avatarId = avatarId; }
+
+    public List<Integer> getEarnedBadges() { return earnedBadges; }
+    public void setEarnedBadges(List<Integer> earnedBadges) { this.earnedBadges = earnedBadges; }
 }

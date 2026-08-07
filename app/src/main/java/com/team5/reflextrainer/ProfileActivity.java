@@ -16,9 +16,13 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.team5.reflextrainer.data.TrainingMode;
 import com.team5.reflextrainer.data.TrainingSessionRepository;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -33,10 +37,12 @@ public class ProfileActivity extends AppCompatActivity {
     private int selectedAvatarId = 0;
 
     private final boolean[] earned = new boolean[Achievements.COUNT];
+    private final Set<Integer> persistedBadges = new HashSet<>();
     private TrainingSessionRepository sessionRepository;
+    private final ProfileManager profileManager = new ProfileManager();
     private String currentUserId;
 
-    private boolean profileLoaded, sessionsLoaded, challengesLoaded, friendsLoaded, avatarFixApplied;
+    private boolean profileLoaded, badgesLoaded, sessionsLoaded, challengesLoaded, friendsLoaded, avatarFixApplied;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,18 +154,43 @@ public class ProfileActivity extends AppCompatActivity {
             boolean unlocked = Achievements.isAvatarUnlocked(i, earned) || i == currentAvatarId;
             avatarCards[i].setAlpha(unlocked ? 1f : 0.35f);
         }
+        syncNewlyEarnedBadges();
+    }
+
+    /** Pushes any badges that just flipped true and aren't in Firestore yet, so they survive a reinstall. */
+    private void syncNewlyEarnedBadges() {
+        if (currentUserId == null) return;
+        List<Integer> newlyEarned = new ArrayList<>();
+        for (int i = 0; i < earned.length; i++) {
+            if (earned[i] && !persistedBadges.contains(i)) newlyEarned.add(i);
+        }
+        if (newlyEarned.isEmpty()) return;
+        persistedBadges.addAll(newlyEarned);
+        profileManager.addEarnedBadges(currentUserId, newlyEarned);
     }
 
     // ===================== achievements (gate the avatar picker) =====================
 
     private void loadAchievements() {
         if (currentUserId == null) return;
-        sessionRepository.getTrainingHistoryForUser(currentUserId, sessions -> {
-            Achievements.Streak streak = Achievements.computeStreak(sessions);
-            Achievements.computeSessionBadges(sessions, streak.days, earned);
+        profileManager.loadEarnedBadges(currentUserId, badgeIndices -> {
+            for (int i : badgeIndices) {
+                if (i >= 0 && i < earned.length) earned[i] = true;
+            }
+            persistedBadges.addAll(badgeIndices);
             refreshAvatarSelection();
-            sessionsLoaded = true;
+            badgesLoaded = true;
             checkEquippedAvatar();
+        });
+        // streak counts any training mode; the session-content badges stay Reaction-scoped.
+        sessionRepository.getTrainingHistoryForUser(currentUserId, allSessions -> {
+            Achievements.Streak streak = Achievements.computeStreak(allSessions);
+            sessionRepository.getTrainingHistoryForUserAndMode(currentUserId, TrainingMode.REACTION.label, reactionSessions -> {
+                Achievements.computeSessionBadges(reactionSessions, streak.days, earned);
+                refreshAvatarSelection();
+                sessionsLoaded = true;
+                checkEquippedAvatar();
+            });
         });
         new ChallengeManager().loadCompleted(new ChallengeManager.ListCallback() {
             @Override
@@ -168,8 +199,8 @@ public class ProfileActivity extends AppCompatActivity {
                 for (Challenge c : challenges) {
                     if (currentUserId.equals(c.getWinnerUid())) wins++;
                 }
-                earned[7] = wins >= 1;
-                earned[10] = wins >= 5;
+                earned[7] = earned[7] || wins >= 1;
+                earned[10] = earned[10] || wins >= 5;
                 refreshAvatarSelection();
                 challengesLoaded = true;
                 checkEquippedAvatar();
@@ -183,7 +214,7 @@ public class ProfileActivity extends AppCompatActivity {
         new FriendManager().loadFriends(new FriendManager.FriendsCallback() {
             @Override
             public void onResult(List<UserProfile> friends) {
-                earned[11] = !friends.isEmpty();
+                earned[11] = earned[11] || !friends.isEmpty();
                 refreshAvatarSelection();
                 friendsLoaded = true;
                 checkEquippedAvatar();
@@ -203,7 +234,7 @@ public class ProfileActivity extends AppCompatActivity {
      * to the default and save that correction.
      */
     private void checkEquippedAvatar() {
-        if (avatarFixApplied || !profileLoaded || !sessionsLoaded || !challengesLoaded || !friendsLoaded) return;
+        if (avatarFixApplied || !profileLoaded || !badgesLoaded || !sessionsLoaded || !challengesLoaded || !friendsLoaded) return;
         avatarFixApplied = true;
         if (currentAvatarId == 0 || Achievements.isAvatarUnlocked(currentAvatarId, earned)) return;
 

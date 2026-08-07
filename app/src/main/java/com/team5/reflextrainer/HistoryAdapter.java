@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.team5.reflextrainer.data.TrainingMode;
 import com.team5.reflextrainer.data.TrainingSession;
 
 import java.text.SimpleDateFormat;
@@ -36,22 +37,23 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder h, int position) {
         TrainingSession s = sessions.get(position);
-        h.tvDifficulty.setText(s.getDifficulty());
-        h.tvDifficulty.setTextColor(colorForDifficulty(h.itemView, s.getDifficulty()));
+        String mode = s.getMode() != null ? s.getMode() : TrainingMode.REACTION.label;
+        h.tvMode.setText(mode.toUpperCase(Locale.getDefault()) + " · " + s.getDifficulty());
+        h.tvMode.setTextColor(colorForMode(h.itemView, mode));
         h.tvDate.setText(dateFormat.format(new Date(s.getTimestamp()))
                 + "  ·  " + s.getCorrectRounds() + "/" + s.getTotalRounds() + " correct");
         h.tvReaction.setText("avg " + s.getAvgReactionMs() + " ms");
     }
 
-    /** Mirrors the Easy/Medium/Hard go-set-hold colors used on Level Select. */
-    private int colorForDifficulty(View anchor, String difficulty) {
+    /** Matches the mode colors used on Mode Select / Fatigue Category (accent/amber/danger). */
+    private int colorForMode(View anchor, String mode) {
         int colorRes;
-        if ("Easy".equalsIgnoreCase(difficulty)) {
-            colorRes = R.color.accent;
-        } else if ("Hard".equalsIgnoreCase(difficulty)) {
+        if (TrainingMode.RHYTHM.label.equalsIgnoreCase(mode)) {
+            colorRes = R.color.color_set;
+        } else if (TrainingMode.FATIGUE.label.equalsIgnoreCase(mode)) {
             colorRes = R.color.danger;
         } else {
-            colorRes = R.color.color_set;
+            colorRes = R.color.accent;
         }
         return anchor.getContext().getColor(colorRes);
     }
@@ -62,10 +64,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvDifficulty, tvDate, tvReaction;
+        TextView tvMode, tvDate, tvReaction;
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvDifficulty = itemView.findViewById(R.id.tvDifficulty);
+            tvMode = itemView.findViewById(R.id.tvMode);
             tvDate = itemView.findViewById(R.id.tvDate);
             tvReaction = itemView.findViewById(R.id.tvReaction);
         }

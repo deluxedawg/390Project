@@ -49,6 +49,8 @@
         <activity android:name=".ChallengeResultActivity" android:exported="false" android:screenOrientation="sensor" />
         <activity android:name=".ModeSelectActivity" android:exported="false" android:screenOrientation="sensor" />
         <activity android:name=".RhythmActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".FatigueCategoryActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".FatigueTrainingActivity" android:exported="false" android:screenOrientation="sensor" />
         <activity android:name=".InboxActivity" android:exported="false" android:screenOrientation="sensor" />
         <activity android:name=".ChatActivity" android:exported="false" android:screenOrientation="sensor" />
 

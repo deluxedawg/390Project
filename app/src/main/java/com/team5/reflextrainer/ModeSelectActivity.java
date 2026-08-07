@@ -18,6 +18,9 @@ public class ModeSelectActivity extends AppCompatActivity {
         findViewById(R.id.cardRhythm).setOnClickListener(v ->
                 startActivity(new Intent(this, RhythmActivity.class)));
 
+        findViewById(R.id.cardFatigue).setOnClickListener(v ->
+                startActivity(new Intent(this, FatigueCategoryActivity.class)));
+
         findViewById(R.id.btnBackHome).setOnClickListener(v -> finish());
     }
 }
