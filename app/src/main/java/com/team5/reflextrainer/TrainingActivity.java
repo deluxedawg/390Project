@@ -23,7 +23,7 @@ import java.util.Random;
 public class TrainingActivity extends AppCompatActivity implements ESPBluetoothManager.Listener {
 
     // ===== TEMP: tap-to-react instead of the physical sensor =====
-    private static final boolean SIMULATION_MODE = true;
+    private static final boolean SIMULATION_MODE = false;
 
     private TextView tvInstruction, tvResult, tvProgress;
     private Button btnStartRound;
@@ -274,7 +274,13 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
     // ===================== real sensor =====================
 
     private byte pickRandomTarget() {
-        if (random.nextInt(5) == 0) return SensorMessage.TARGET_SHAKE_IMU;
+        int roll = random.nextInt(12);
+        if (roll == 0) return SensorMessage.TARGET_SHAKE_IMU;
+        if (roll == 1) return SensorMessage.TARGET_JOY_UP;
+        if (roll == 2) return SensorMessage.TARGET_JOY_DOWN;
+        if (roll == 3) return SensorMessage.TARGET_JOY_LEFT;
+        if (roll == 4) return SensorMessage.TARGET_JOY_RIGHT;
+        if (roll == 5) return SensorMessage.TARGET_ULTRASONIC;
         return (byte) random.nextInt(NUM_TARGETS);
     }
 
@@ -306,6 +312,11 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
 
     private String describeTarget(byte targetId) {
         if (targetId == SensorMessage.TARGET_SHAKE_IMU) return "SHAKE IT";
+        if (targetId == SensorMessage.TARGET_ULTRASONIC) return "SWIPE YOUR HAND";
+        if (targetId == SensorMessage.TARGET_JOY_UP)    return "↑ PUSH UP";
+        if (targetId == SensorMessage.TARGET_JOY_DOWN)  return "↓ PUSH DOWN";
+        if (targetId == SensorMessage.TARGET_JOY_LEFT)  return "← PUSH LEFT";
+        if (targetId == SensorMessage.TARGET_JOY_RIGHT) return "→ PUSH RIGHT";
         return "Press button " + targetId;
     }
 

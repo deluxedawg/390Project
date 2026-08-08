@@ -36,6 +36,13 @@ public class SensorMessage {
     public final byte targetId;
     public final int  reactionTimeMs;   // reassembled from lo/hi
 
+    // Joystick Responses
+    public static final byte TARGET_ULTRASONIC = (byte) 0xFA;
+    public static final byte TARGET_JOY_UP     = (byte) 0xFB;
+    public static final byte TARGET_JOY_DOWN   = (byte) 0xFC;
+    public static final byte TARGET_JOY_LEFT   = (byte) 0xFD;
+    public static final byte TARGET_JOY_RIGHT  = (byte) 0xF9;
+
     private SensorMessage(byte response, byte targetId, int reactionTimeMs) {
         this.response = response;
         this.targetId = targetId;
