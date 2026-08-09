@@ -31,6 +31,7 @@ public class RhythmActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     private SoundPool soundPool;
     private int drumSoundId;
+    private volatile boolean drumLoaded = false;
 
     private BeatTrack track;
     private List<Long> beatTimes;
@@ -39,6 +40,9 @@ public class RhythmActivity extends AppCompatActivity {
 
     // window (ms) before a beat during which the ring is visible / a tap counts
     private static final long RING_LEAD = 900;
+
+    // how long the LISTEN demo plays before handing off to REPLICATE
+    private static final long PREVIEW_DURATION_MS = 10_000;
 
     private int nextBeatIndex = 0;
     private boolean autoPlayDrums = false;       // true in listen phase
@@ -80,6 +84,9 @@ public class RhythmActivity extends AppCompatActivity {
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                         .build())
                 .build();
+        soundPool.setOnLoadCompleteListener((pool, sampleId, status) -> {
+            if (sampleId == drumSoundId && status == 0) drumLoaded = true;
+        });
         drumSoundId = soundPool.load(this, R.raw.drum_hit, 1);
 
         btnAction.setOnClickListener(v -> startListen());
@@ -160,9 +167,11 @@ public class RhythmActivity extends AppCompatActivity {
                 nextBeatIndex++;
             }
 
-            // once we're past the last beat (+ a little tail), end the phase
+            // once we're past the last beat (+ a little tail), end the phase;
+            // the LISTEN demo is additionally capped to a short preview
             long lastBeat = beatTimes.get(beatTimes.size() - 1);
-            if (pos >= lastBeat + 600) {
+            long phaseEnd = (phase == Phase.LISTEN) ? Math.min(lastBeat + 600, PREVIEW_DURATION_MS) : lastBeat + 600;
+            if (pos >= phaseEnd) {
                 if (onPhaseComplete != null) onPhaseComplete.run();
                 return;   // stop the watcher
             }
@@ -263,6 +272,7 @@ public class RhythmActivity extends AppCompatActivity {
     }
 
     private void playDrum() {
+        if (!drumLoaded) return;   // SoundPool.load() is async; ignore taps/beats until it's ready
         soundPool.play(drumSoundId, 1f, 1f, 1, 0, 1f);
     }
 

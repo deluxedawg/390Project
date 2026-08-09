@@ -66,6 +66,23 @@ public class ChallengeManager {
                 .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
+    /** Challenges I sent that the other person hasn't played yet. */
+    public void loadSent(ListCallback callback) {
+        FirebaseUser me = FirebaseAuth.getInstance().getCurrentUser();
+        if (me == null) { callback.onError("Not signed in"); return; }
+
+        db.collection(COLLECTION)
+                .whereEqualTo("fromUid", me.getUid())
+                .whereEqualTo("status", "pending")
+                .get()
+                .addOnSuccessListener(q -> {
+                    List<Challenge> list = new ArrayList<>();
+                    q.forEach(d -> list.add(d.toObject(Challenge.class)));
+                    callback.onResult(list);
+                })
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
+
     /** Everything involving me that's finished — my record. */
     public void loadCompleted(ListCallback callback) {
         FirebaseUser me = FirebaseAuth.getInstance().getCurrentUser();

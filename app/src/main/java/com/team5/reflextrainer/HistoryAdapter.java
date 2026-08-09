@@ -18,12 +18,16 @@ import java.util.Locale;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
 
+    public interface Listener { void onOpen(TrainingSession session); }
+
     private final List<TrainingSession> sessions;
+    private final Listener listener;
     private final SimpleDateFormat dateFormat =
             new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
 
-    public HistoryAdapter(List<TrainingSession> sessions) {
+    public HistoryAdapter(List<TrainingSession> sessions, Listener listener) {
         this.sessions = sessions;
+        this.listener = listener;
     }
 
     @NonNull
@@ -43,6 +47,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         h.tvDate.setText(dateFormat.format(new Date(s.getTimestamp()))
                 + "  ·  " + s.getCorrectRounds() + "/" + s.getTotalRounds() + " correct");
         h.tvReaction.setText("avg " + s.getAvgReactionMs() + " ms");
+        h.itemView.setOnClickListener(v -> listener.onOpen(s));
     }
 
     /** Matches the mode colors used on Mode Select / Fatigue Category (accent/amber/danger). */

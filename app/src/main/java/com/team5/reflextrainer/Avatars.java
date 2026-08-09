@@ -17,6 +17,10 @@ public final class Avatars {
             R.drawable.ic_avatar_10,
             R.drawable.ic_avatar_11,
             R.drawable.ic_avatar_12,
+            R.drawable.ic_avatar_13,
+            R.drawable.ic_avatar_14,
+            R.drawable.ic_avatar_15,
+            R.drawable.ic_avatar_16,
     };
 
     public static int resFor(int avatarId) {

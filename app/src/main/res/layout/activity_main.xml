@@ -254,6 +254,10 @@
                             <ImageView android:id="@+id/badge9" style="@style/BadgeIcon" android:src="@drawable/ic_avatar_10" android:layout_marginStart="12dp"/>
                             <ImageView android:id="@+id/badge10" style="@style/BadgeIcon" android:src="@drawable/ic_avatar_11" android:layout_marginStart="12dp"/>
                             <ImageView android:id="@+id/badge11" style="@style/BadgeIcon" android:src="@drawable/ic_avatar_12" android:layout_marginStart="12dp"/>
+                            <ImageView android:id="@+id/badge12" style="@style/BadgeIcon" android:src="@drawable/ic_avatar_13" android:layout_marginStart="12dp"/>
+                            <ImageView android:id="@+id/badge13" style="@style/BadgeIcon" android:src="@drawable/ic_avatar_14" android:layout_marginStart="12dp"/>
+                            <ImageView android:id="@+id/badge14" style="@style/BadgeIcon" android:src="@drawable/ic_avatar_15" android:layout_marginStart="12dp"/>
+                            <ImageView android:id="@+id/badge15" style="@style/BadgeIcon" android:src="@drawable/ic_avatar_16" android:layout_marginStart="12dp"/>
 
                         </LinearLayout>
                     </HorizontalScrollView>
@@ -318,25 +322,71 @@
                 android:scaleType="center"
                 android:contentDescription="@string/nav_leaderboard"/>
 
-            <ImageButton
-                android:id="@+id/btnChallenges"
+            <FrameLayout
                 android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_nav_challenges"
-                android:tint="@color/text_secondary"
-                android:scaleType="center"
-                android:contentDescription="@string/nav_challenges"/>
+                android:layout_height="52dp">
 
-            <ImageButton
-                android:id="@+id/btnMessages"
+                <ImageButton
+                    android:id="@+id/btnChallenges"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_nav_challenges"
+                    android:tint="@color/text_secondary"
+                    android:scaleType="center"
+                    android:contentDescription="@string/nav_challenges"/>
+
+                <TextView
+                    android:id="@+id/tvChallengesBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="16dp"
+                    android:minWidth="16dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/bg_notification_dot"
+                    android:gravity="center"
+                    android:paddingHorizontal="3dp"
+                    android:text="1"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    android:importantForAccessibility="no"/>
+            </FrameLayout>
+
+            <FrameLayout
                 android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_nav_messages"
-                android:tint="@color/text_secondary"
-                android:scaleType="center"
-                android:contentDescription="@string/nav_messages"/>
+                android:layout_height="52dp">
+
+                <ImageButton
+                    android:id="@+id/btnMessages"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_nav_messages"
+                    android:tint="@color/text_secondary"
+                    android:scaleType="center"
+                    android:contentDescription="@string/nav_messages"/>
+
+                <TextView
+                    android:id="@+id/tvMessagesBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="16dp"
+                    android:minWidth="16dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/bg_notification_dot"
+                    android:gravity="center"
+                    android:paddingHorizontal="3dp"
+                    android:text="1"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    android:importantForAccessibility="no"/>
+            </FrameLayout>
 
             <ImageButton
                 android:id="@+id/btnProfile"

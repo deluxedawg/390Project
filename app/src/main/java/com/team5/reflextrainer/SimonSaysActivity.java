@@ -1,4 +1,4 @@
-package com.team5.reflextrainer;
+/*package com.team5.reflextrainer;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -137,7 +137,7 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
         }
     }
 
-    /** Called once a round produces a result (from tap or sensor). */
+
     private void recordRound(byte outcome, int reactionMs) {
         String outcomeText;
         if (outcome == SensorMessage.OUTCOME_CORRECT) {
@@ -320,4 +320,4 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
         super.onDestroy();
         mainhandler.removeCallbacksAndMessages(null);
     }
-}
+}*/

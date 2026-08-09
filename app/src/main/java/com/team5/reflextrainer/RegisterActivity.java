@@ -9,9 +9,9 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
@@ -64,10 +64,14 @@ public class RegisterActivity extends AppCompatActivity {
         View btnInfo = findViewById(R.id.btnInfo);
         btnInfo.setOnClickListener(v -> startActivity(new Intent(this, AboutActivity.class)));
         EdgeToEdge.applyTopInsetMargin(btnInfo);
+
+        View btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> finish());
+        EdgeToEdge.applyTopInsetMargin(btnBack);
     }
 
     private void showResearchConsentDialog() {
-        new AlertDialog.Builder(this)
+        new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.research_consent_title)
                 .setMessage(R.string.research_consent_body)
                 .setPositiveButton("Got it", null)
