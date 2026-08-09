@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/bg">
+
+    <ImageView
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:src="@drawable/ic_logo"
+        android:layout_marginBottom="24dp"/>
+
+    <TextView
+        style="@style/TextAppearance.ReflexTrainer.Display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="REFLEX"
+        android:textSize="46sp"/>
+
+    <TextView
+        style="@style/TextAppearance.ReflexTrainer.Display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TRAINER"
+        android:textColor="@color/accent"
+        android:textSize="46sp"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        style="@style/TextAppearance.ReflexTrainer.Eyebrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="On your marks"
+        android:layout_marginTop="32dp"/>
+
+    <!-- light-gate loading indicator: hold -> set -> go -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="14dp">
+
+        <ImageView
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:src="@drawable/dot_light"
+            app:tint="@color/danger"/>
+
+        <ImageView
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/dot_light"
+            app:tint="@color/color_set"/>
+
+        <ImageView
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/dot_light"
+            app:tint="@color/accent"/>
+
+    </LinearLayout>
+
+</LinearLayout>

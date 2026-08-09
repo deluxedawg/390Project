@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "385656529517",
+    "project_id": "app-ccc83",
+    "storage_bucket": "app-ccc83.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:385656529517:android:de61c797a1d915cf1e9564",
+        "android_client_info": {
+          "package_name": "com.team5.reflextrainer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxYoAbnNruW_3roQG26XiwQhNTNsb3rHs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

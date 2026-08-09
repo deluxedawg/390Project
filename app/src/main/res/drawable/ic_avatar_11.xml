@@ -1,0 +1,15 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+
+    <!-- badge: star -->
+    <path
+        android:fillColor="@color/danger"
+        android:pathData="M0,20 A20,20 0 1,1 40,20 A20,20 0 1,1 0,20 Z"/>
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M20,8 L22.9,16.5 L32,16.5 L24.8,21.8 L27.6,30.5 L20,25 L12.4,30.5 L15.2,21.8 L8,16.5 L17.1,16.5 Z"/>
+</vector>

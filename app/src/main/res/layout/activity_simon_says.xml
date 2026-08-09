@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/bg"
+    android:padding="28dp">
+
+    <TextView
+        style="@style/TextAppearance.ReflexTrainer.Eyebrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SIMON SAYS (MEMORY)"/>
+
+    <TextView
+        android:id="@+id/tvProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp"
+        android:fontFamily="@font/space_mono"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/tvInstruction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Press Start to begin"
+        android:textColor="@color/text_primary"
+        android:textSize="22sp"
+        android:gravity="center"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:id="@+id/tvResult"
+        style="@style/TextAppearance.ReflexTrainer.Readout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="—"
+        android:textSize="32sp"
+        android:background="@drawable/bg_readout"
+        android:gravity="center"
+        android:minWidth="220dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Simulation Controls (Visible only in SIMULATION_MODE) -->
+    <GridLayout
+        android:id="@+id/simulationLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="2"
+        android:layout_marginBottom="24dp">
+
+        <Button
+            android:id="@+id/btnSim0"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_margin="12dp"
+            android:backgroundTint="@color/simon_green"
+            android:alpha="0.4"/>
+        <Button
+            android:id="@+id/btnSim1"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_margin="12dp"
+            android:backgroundTint="@color/simon_red"
+            android:alpha="0.4"/>
+        <Button
+            android:id="@+id/btnSim2"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_margin="12dp"
+            android:backgroundTint="@color/simon_yellow"
+            android:alpha="0.4"/>
+        <Button
+            android:id="@+id/btnSim3"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_margin="12dp"
+            android:backgroundTint="@color/simon_blue"
+            android:alpha="0.4"/>
+    </GridLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnStartGame"
+        style="@style/AppButton"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Start Game"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBack"
+        style="@style/AppButton.Outline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Back to Home"
+        android:layout_marginTop="12dp"/>
+
+</LinearLayout>

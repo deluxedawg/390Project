@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">ReflexTrainer</string>
+
+    <string name="nav_history">History</string>
+    <string name="nav_leaderboard">Leaderboard</string>
+    <string name="nav_challenges">Challenges</string>
+    <string name="nav_messages">Messages</string>
+    <string name="nav_profile">Profile</string>
+    <string name="log_out">Log out</string>
+    <string name="your_avatar">Your avatar</string>
+    <string name="edit_profile">Edit username and avatar</string>
+</resources>

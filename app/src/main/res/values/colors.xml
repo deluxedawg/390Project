@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- instrument-panel base: warm near-black, not generic Material dark -->
+    <color name="bg">#0A0C10</color>
+    <color name="surface">#14181F</color>
+    <color name="line">#232935</color>
+
+    <!-- light-gate vocabulary: hold (red) / set (amber) / go (green) -->
+    <color name="accent">#29FF88</color>
+    <color name="accent_dark">#1FCC6C</color>
+    <color name="color_set">#FFB020</color>
+    <color name="memory">#9C27B0</color>
+    <color name="simon_green">#4CAF50</color>
+    <color name="simon_red">#F44336</color>
+    <color name="simon_yellow">#FFEB3B</color>
+    <color name="simon_blue">#2196F3</color>
+    <color name="simon_orange">#FF9800</color>
+    <color name="danger">#FF4557</color>
+
+    <color name="text_primary">#F4F6F5</color>
+    <color name="text_secondary">#8C96A6</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+</resources>

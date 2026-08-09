@@ -1,0 +1,65 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        tools:targetApi="s"/>
+
+
+    <uses-permission android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
+        android:maxSdkVersion="30"/>
+
+    <uses-feature android:name="android.hardware.bluetooth"
+        android:required="false"/>
+
+    <application
+        android:allowBackup="true"
+        android:label="Reflex Trainer"
+        android:theme="@style/Theme.ReflexTrainer">
+
+        <activity android:name=".SplashActivity" android:exported="true" android:screenOrientation="sensor">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".LoginActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".RegisterActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".AboutActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".MainActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".TrainingActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".SimonSaysActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".HistoryActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".LeaderboardActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".ProfileActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".AchievementsActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".AddFriendActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".FriendsActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".LevelSelectActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".SummaryActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".ChallengesActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".ChallengeResultActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".ModeSelectActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".RhythmActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".FatigueCategoryActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".FatigueTrainingActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".InboxActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".ChatActivity" android:exported="false" android:screenOrientation="sensor" />
+
+        <service android:name=".PushService" android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+
+    </application>
+</manifest>

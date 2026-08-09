@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg"
+    android:padding="24dp">
+
+    <!-- ===================== exercise / reaction-test phase ===================== -->
+    <LinearLayout
+        android:id="@+id/groupExercise"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/tvRoundProgress"
+            style="@style/TextAppearance.ReflexTrainer.Eyebrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ROUND 1 OF 3"/>
+
+        <!-- exercise demo clip: only shown once a matching assets/exercises/<slug>.gif or .mp4 exists -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardDemo"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            app:cardBackgroundColor="@color/surface"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            android:layout_marginTop="16dp"
+            android:visibility="gone">
+
+            <VideoView
+                android:id="@+id/videoDemo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <ImageView
+                android:id="@+id/imageDemo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:visibility="gone"/>
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/tvExerciseName"
+            style="@style/TextAppearance.ReflexTrainer.Display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/tvExerciseDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_secondary"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/tvCountdown"
+            style="@style/TextAppearance.ReflexTrainer.Readout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="40sp"
+            android:layout_marginTop="24dp"
+            android:visibility="gone"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnExerciseDone"
+            style="@style/AppButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="I'm done"
+            android:layout_marginTop="28dp"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tvReactAttempt"
+            style="@style/TextAppearance.ReflexTrainer.Eyebrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:visibility="gone"/>
+
+        <!-- readout window: doubles as the "Wait... / TAP NOW!" reaction-test target -->
+        <TextView
+            android:id="@+id/tvReactBox"
+            style="@style/TextAppearance.ReflexTrainer.Readout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_readout"
+            android:gravity="center"
+            android:minHeight="140dp"
+            android:textSize="28sp"
+            android:layout_marginTop="24dp"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+    <!-- ===================== result phase ===================== -->
+    <LinearLayout
+        android:id="@+id/groupResult"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/TextAppearance.ReflexTrainer.Eyebrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SESSION COMPLETE"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/tvAvgResult"
+            style="@style/TextAppearance.ReflexTrainer.Readout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="40sp"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/tvTrendResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="12dp"/>
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/chartFatigue"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/tvRound1Result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:paddingVertical="6dp"/>
+
+        <TextView
+            android:id="@+id/tvRound2Result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:paddingVertical="6dp"/>
+
+        <TextView
+            android:id="@+id/tvRound3Result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:paddingVertical="6dp"/>
+
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDone"
+        style="@style/AppButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Done"
+        android:layout_marginTop="12dp"
+        android:visibility="gone"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBack"
+        style="@style/AppButton.Outline"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Back to Home"
+        android:layout_marginTop="12dp"/>
+
+</LinearLayout>
