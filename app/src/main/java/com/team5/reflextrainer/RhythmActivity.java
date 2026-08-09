@@ -83,6 +83,9 @@ public class RhythmActivity extends AppCompatActivity {
         drumSoundId = soundPool.load(this, R.raw.drum_hit, 1);
 
         btnAction.setOnClickListener(v -> startListen());
+
+        Button btnBackHome = findViewById(R.id.btnBackHome);
+        btnBackHome.setOnClickListener(v -> finish());
     }
 
     // ---------------- LISTEN ----------------

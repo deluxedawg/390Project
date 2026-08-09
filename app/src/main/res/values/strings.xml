@@ -9,4 +9,9 @@
     <string name="log_out">Log out</string>
     <string name="your_avatar">Your avatar</string>
     <string name="edit_profile">Edit username and avatar</string>
+
+    <string name="research_consent_title">Help us study reflexes &amp; fitness</string>
+    <string name="research_consent_body">With your permission, we\'ll collect your height and weight to calculate your Body Mass Index (BMI). We\'ll then pair your BMI with the reaction-time results you already generate while training in this app, so we can study whether there\'s a correlation between BMI and reaction time.\n\n• This is entirely optional — you can create an account and use the app without sharing this.\n• Your height, weight, and BMI are visible to you in your Profile.\n• You can turn this off at any time from your Profile; doing so deletes your stored height and weight.\n• This data is linked to your account for accuracy, and used internally for reflex/fitness research — we won\'t share it outside the app.</string>
+    <string name="research_consent_checkbox">Share my height &amp; weight for this research (optional)</string>
+    <string name="research_consent_learn_more">Learn more</string>
 </resources>

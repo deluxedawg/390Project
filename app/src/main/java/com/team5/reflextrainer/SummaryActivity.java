@@ -58,10 +58,8 @@ public class SummaryActivity extends AppCompatActivity {
         setupRoundsTabs(rv, rounds, best);
         setupAiCoach(avg, best, total, correct, difficulty);
 
-        findViewById(R.id.btnDone).setOnClickListener(v -> {
-            // go back to Home, clearing the training stack
-            finish();
-        });
+        findViewById(R.id.btnDone).setOnClickListener(v -> finish());
+        findViewById(R.id.btnBackHome).setOnClickListener(v -> finish());
     }
 
     private void setupRoundsTabs(RecyclerView rv, List<Integer> rounds, int best) {

@@ -14,8 +14,14 @@ public class ProfileManager {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     /** Create or update a user's profile, keyed by uid. */
-    public void saveProfile(String uid, String username, String email) {
+    public void saveProfile(String uid, String username, String email,
+                             boolean researchConsent, double heightCm, double weightKg) {
         UserProfile profile = new UserProfile(uid, username, email);
+        profile.setResearchConsent(researchConsent);
+        if (researchConsent) {
+            profile.setHeightCm(heightCm);
+            profile.setWeightKg(weightKg);
+        }
         db.collection(COLLECTION).document(uid).set(profile);
     }
 
@@ -40,6 +46,20 @@ public class ProfileManager {
     /** Store this device's FCM token so a Cloud Function can push notifications to it. */
     public void updateFcmToken(String uid, String token) {
         db.collection(COLLECTION).document(uid).update("fcmToken", token);
+    }
+
+    /**
+     * Partial update for the BMI-research opt-in. Turning consent off clears the stored
+     * height/weight rather than leaving stale values behind under a false flag.
+     */
+    public void updateResearchData(String uid, boolean researchConsent, double heightCm, double weightKg,
+                                    ActionCallback callback) {
+        db.collection(COLLECTION).document(uid)
+                .update("researchConsent", researchConsent,
+                        "heightCm", researchConsent ? heightCm : 0,
+                        "weightKg", researchConsent ? weightKg : 0)
+                .addOnSuccessListener(v -> callback.onDone())
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
     }
 
     /** Load the profile for a given uid. */

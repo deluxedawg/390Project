@@ -4,14 +4,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,6 +25,7 @@ import com.team5.reflextrainer.data.TrainingSessionRepository;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -31,6 +35,13 @@ public class ProfileActivity extends AppCompatActivity {
     private View groupProfileView, groupProfileEdit;
     private EditText etUsernameEdit;
     private MaterialCardView[] avatarCards;
+
+    private CheckBox cbResearchConsent;
+    private View groupResearchData;
+    private EditText etHeight, etWeight;
+    private TextView tvBmiResult;
+    private MaterialButton btnSaveResearchData;
+    private boolean settingConsentFromLoad;
 
     private String currentUsername = "";
     private int currentAvatarId = 0;
@@ -86,6 +97,36 @@ public class ProfileActivity extends AppCompatActivity {
 
         findViewById(R.id.btnBackHome).setOnClickListener(v -> finish());
 
+        cbResearchConsent = findViewById(R.id.cbResearchConsentProfile);
+        groupResearchData = findViewById(R.id.groupResearchDataProfile);
+        etHeight = findViewById(R.id.etHeightProfile);
+        etWeight = findViewById(R.id.etWeightProfile);
+        tvBmiResult = findViewById(R.id.tvBmiResult);
+        btnSaveResearchData = findViewById(R.id.btnSaveResearchData);
+
+        findViewById(R.id.tvLearnMoreBmi).setOnClickListener(v -> showResearchConsentDialog());
+        btnSaveResearchData.setOnClickListener(v -> saveResearchData());
+        cbResearchConsent.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (settingConsentFromLoad) return;
+            groupResearchData.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            btnSaveResearchData.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            if (!isChecked) {
+                etHeight.setText("");
+                etWeight.setText("");
+                tvBmiResult.setVisibility(View.GONE);
+                if (currentUserId != null) {
+                    profileManager.updateResearchData(currentUserId, false, 0, 0, new ProfileManager.ActionCallback() {
+                        @Override public void onDone() {
+                            Toast.makeText(ProfileActivity.this, "Research sharing turned off", Toast.LENGTH_SHORT).show();
+                        }
+                        @Override public void onError(String message) {
+                            Toast.makeText(ProfileActivity.this, "Could not update: " + message, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
+
         findViewById(R.id.btnAddFriend).setOnClickListener(v ->
                 startActivity(new Intent(this, AddFriendActivity.class)));
 
@@ -107,6 +148,18 @@ public class ProfileActivity extends AppCompatActivity {
                 tvUsername.setText(currentUsername);
                 tvEmail.setText(profile.getEmail());
                 ivAvatar.setImageResource(Avatars.resFor(currentAvatarId));
+
+                settingConsentFromLoad = true;
+                cbResearchConsent.setChecked(profile.isResearchConsent());
+                groupResearchData.setVisibility(profile.isResearchConsent() ? View.VISIBLE : View.GONE);
+                btnSaveResearchData.setVisibility(profile.isResearchConsent() ? View.VISIBLE : View.GONE);
+                if (profile.isResearchConsent() && profile.getHeightCm() > 0 && profile.getWeightKg() > 0) {
+                    etHeight.setText(formatNumber(profile.getHeightCm()));
+                    etWeight.setText(formatNumber(profile.getWeightKg()));
+                    showBmi(profile.getBmi());
+                }
+                settingConsentFromLoad = false;
+
                 profileLoaded = true;
                 checkEquippedAvatar();
             }
@@ -279,5 +332,81 @@ public class ProfileActivity extends AppCompatActivity {
                         Toast.makeText(ProfileActivity.this, "Could not save: " + message, Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void saveResearchData() {
+        if (currentUserId == null) return;
+
+        String heightStr = etHeight.getText().toString().trim();
+        String weightStr = etWeight.getText().toString().trim();
+        if (heightStr.isEmpty() || weightStr.isEmpty()) {
+            Toast.makeText(this, "Enter your height and weight", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        double height, weight;
+        try {
+            height = Double.parseDouble(heightStr);
+            weight = Double.parseDouble(weightStr);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Height and weight must be numbers", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (height < 50 || height > 250) {
+            Toast.makeText(this, "Enter a height between 50 and 250 cm", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (weight < 20 || weight > 300) {
+            Toast.makeText(this, "Enter a weight between 20 and 300 kg", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        double bmi = weight / ((height / 100.0) * (height / 100.0));
+        profileManager.updateResearchData(currentUserId, true, height, weight, new ProfileManager.ActionCallback() {
+            @Override
+            public void onDone() {
+                showBmi(bmi);
+                Toast.makeText(ProfileActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void onError(String message) {
+                Toast.makeText(ProfileActivity.this, "Could not save: " + message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void showBmi(double bmi) {
+        String category = UserProfile.categoryFor(bmi);
+        tvBmiResult.setText(String.format(Locale.US, "Your BMI: %.1f (%s)", bmi, category));
+        tvBmiResult.setTextColor(colorForBmiCategory(category));
+        tvBmiResult.setVisibility(View.VISIBLE);
+    }
+
+    private int colorForBmiCategory(String category) {
+        int colorRes;
+        switch (category) {
+            case "Normal":
+                colorRes = R.color.accent;
+                break;
+            case "Underweight":
+            case "Overweight":
+                colorRes = R.color.color_set;
+                break;
+            default: // Obese
+                colorRes = R.color.danger;
+                break;
+        }
+        return getResources().getColor(colorRes, getTheme());
+    }
+
+    private void showResearchConsentDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.research_consent_title)
+                .setMessage(R.string.research_consent_body)
+                .setPositiveButton("Got it", null)
+                .show();
+    }
+
+    private String formatNumber(double v) {
+        return (v == Math.floor(v)) ? String.valueOf((long) v) : String.valueOf(v);
     }
 }

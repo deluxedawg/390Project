@@ -75,6 +75,35 @@ public class AiRecommendationEngine {
         );
     }
 
+    /**
+     * Suggests a starting difficulty ("Easy"/"Medium"/"Hard") for the next Reaction session
+     * from the accuracy and average reaction time of the user's most recent sessions.
+     * Returns null when there isn't enough history yet to base a suggestion on.
+     */
+    public String recommendDifficulty(List<TrainingSession> recentReactionSessions) {
+        if (recentReactionSessions == null || recentReactionSessions.isEmpty()) return null;
+
+        int sumMs = 0, msCount = 0, totalRounds = 0, correctRounds = 0, taken = 0;
+        for (TrainingSession session : recentReactionSessions) {
+            if (taken >= 3) break;   // recentReactionSessions is newest-first
+            if (session.getAvgReactionMs() > 0) {
+                sumMs += session.getAvgReactionMs();
+                msCount++;
+            }
+            totalRounds += session.getTotalRounds();
+            correctRounds += session.getCorrectRounds();
+            taken++;
+        }
+        if (msCount == 0 || totalRounds == 0) return null;
+
+        int avgMs = Math.round(sumMs / (float) msCount);
+        int accuracy = Math.round((correctRounds * 100f) / totalRounds);
+
+        if (accuracy < 70) return "Easy";
+        if (accuracy >= 85 && avgMs <= 350) return "Hard";
+        return "Medium";
+    }
+
     public Recommendation buildProgressSummary(List<TrainingSession> history) {
         if (history == null || history.size() < 2) {
             return new Recommendation(

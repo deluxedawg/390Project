@@ -235,4 +235,12 @@
         android:text="Done"
         android:layout_marginTop="12dp"/>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBackHome"
+        style="@style/AppButton.Outline"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Back to Home"
+        android:layout_marginTop="12dp"/>
+
 </LinearLayout>

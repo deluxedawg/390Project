@@ -23,7 +23,7 @@ import java.util.Random;
 public class TrainingActivity extends AppCompatActivity implements ESPBluetoothManager.Listener {
 
     // ===== TEMP: tap-to-react instead of the physical sensor =====
-    private static final boolean SIMULATION_MODE = false;
+    private static final boolean SIMULATION_MODE = true;
 
     private TextView tvInstruction, tvResult, tvProgress;
     private Button btnStartRound;
