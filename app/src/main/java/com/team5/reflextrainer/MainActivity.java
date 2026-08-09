@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
@@ -45,6 +46,13 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
     private TrainingSessionRepository sessionRepository;
     private final ProfileManager profileManager = new ProfileManager();
     private String currentUserId;
+
+    private TextView tvMessagesBadge;
+    private final MessageManager messageManager = new MessageManager();
+    private ListenerRegistration conversationsRegistration;
+
+    private TextView tvChallengesBadge;
+    private final ChallengeManager challengeManager = new ChallengeManager();
 
     private static final float LIT = 1f;
     private static final float UNLIT = 0.25f;
@@ -82,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
 
         tvStreak = findViewById(R.id.tvStreak);
         tvStreakSub = findViewById(R.id.tvStreakSub);
+        tvChallengesBadge = findViewById(R.id.tvChallengesBadge);
 
         tvBadgeCount = findViewById(R.id.tvBadgeCount);
         badgeViews = new ImageView[] {
@@ -91,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
                 findViewById(R.id.badge6), findViewById(R.id.badge7),
                 findViewById(R.id.badge8), findViewById(R.id.badge9),
                 findViewById(R.id.badge10), findViewById(R.id.badge11),
+                findViewById(R.id.badge12), findViewById(R.id.badge13),
+                findViewById(R.id.badge14), findViewById(R.id.badge15),
         };
         View.OnClickListener openAchievements = v ->
                 startActivity(new Intent(this, AchievementsActivity.class));
@@ -104,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         loadStreak();
         loadChallengeBadge();
         loadFriendBadge();
+        loadIncomingChallengeBadge();
 
         tvWelcome = findViewById(R.id.tvWelcome);
         ivHomeAvatar = findViewById(R.id.ivHomeAvatar);
@@ -138,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         challenges.setOnClickListener(v ->
                 startActivity(new Intent(this, ChallengesActivity.class)));
 
+        tvMessagesBadge = findViewById(R.id.tvMessagesBadge);
         View messages = findViewById(R.id.btnMessages);
         messages.setOnClickListener(v ->
                 startActivity(new Intent(this, InboxActivity.class)));
@@ -174,7 +187,33 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         loadStreak();
         loadChallengeBadge();
         loadFriendBadge();
+        loadIncomingChallengeBadge();
         loadProfileHeader(FirebaseAuth.getInstance().getCurrentUser());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (currentUserId == null || tvMessagesBadge == null) return;
+        conversationsRegistration = messageManager.listenForConversations(new MessageManager.ConversationsListener() {
+            @Override
+            public void onResult(List<ConversationSummary> conversations) {
+                int unread = 0;
+                for (ConversationSummary c : conversations) unread += c.getUnreadCount();
+                tvMessagesBadge.setText(unread > 99 ? "99+" : String.valueOf(unread));
+                tvMessagesBadge.setVisibility(unread > 0 ? View.VISIBLE : View.GONE);
+            }
+            @Override public void onError(String message) { /* leave the badge as-is */ }
+        });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (conversationsRegistration != null) {
+            conversationsRegistration.remove();
+            conversationsRegistration = null;
+        }
     }
 
     private void loadProfileHeader(FirebaseUser user) {
@@ -255,6 +294,20 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
             }
             @Override
             public void onError(String message) { /* leave the Challenger/Rival Slayer badges as-is */ }
+        });
+    }
+
+    private void loadIncomingChallengeBadge() {
+        if (currentUserId == null || tvChallengesBadge == null) return;
+        challengeManager.loadIncoming(new ChallengeManager.ListCallback() {
+            @Override
+            public void onResult(List<Challenge> challenges) {
+                int count = challenges.size();
+                tvChallengesBadge.setText(count > 99 ? "99+" : String.valueOf(count));
+                tvChallengesBadge.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
+            }
+            @Override
+            public void onError(String message) { /* leave the badge as-is */ }
         });
     }
 

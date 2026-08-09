@@ -11,11 +11,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,6 +42,7 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView tvBmiResult;
     private MaterialButton btnSaveResearchData;
     private boolean settingConsentFromLoad;
+    private TextView tvFriendRequestBadge;
 
     private String currentUsername = "";
     private int currentAvatarId = 0;
@@ -74,6 +75,8 @@ public class ProfileActivity extends AppCompatActivity {
                 findViewById(R.id.avatarCard6), findViewById(R.id.avatarCard7),
                 findViewById(R.id.avatarCard8), findViewById(R.id.avatarCard9),
                 findViewById(R.id.avatarCard10), findViewById(R.id.avatarCard11),
+                findViewById(R.id.avatarCard12), findViewById(R.id.avatarCard13),
+                findViewById(R.id.avatarCard14), findViewById(R.id.avatarCard15),
         };
         for (int i = 0; i < avatarCards.length; i++) {
             int avatarId = i;
@@ -130,6 +133,7 @@ public class ProfileActivity extends AppCompatActivity {
         findViewById(R.id.btnAddFriend).setOnClickListener(v ->
                 startActivity(new Intent(this, AddFriendActivity.class)));
 
+        tvFriendRequestBadge = findViewById(R.id.tvFriendRequestBadge);
         findViewById(R.id.btnFriends).setOnClickListener(v ->
                 startActivity(new Intent(this, FriendsActivity.class)));
 
@@ -139,6 +143,7 @@ public class ProfileActivity extends AppCompatActivity {
         currentUserId = user.getUid();
         sessionRepository = new TrainingSessionRepository(this);
         loadAchievements();
+        loadFriendRequestBadge();
 
         new ProfileManager().loadProfile(user.getUid(), new ProfileManager.ProfileCallback() {
             @Override
@@ -172,6 +177,27 @@ public class ProfileActivity extends AppCompatActivity {
                 profileLoaded = true;
                 checkEquippedAvatar();
             }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadFriendRequestBadge();
+    }
+
+    /** Pending incoming friend requests, shown as a count badge on "Friends & Requests". */
+    private void loadFriendRequestBadge() {
+        if (currentUserId == null || tvFriendRequestBadge == null) return;
+        new FriendManager().loadIncomingRequests(new FriendManager.RequestsCallback() {
+            @Override
+            public void onResult(List<FriendRequest> requests) {
+                int count = requests.size();
+                tvFriendRequestBadge.setText(count > 99 ? "99+" : String.valueOf(count));
+                tvFriendRequestBadge.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
+            }
+            @Override
+            public void onError(String message) { /* leave the badge as-is */ }
         });
     }
 
@@ -399,7 +425,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void showResearchConsentDialog() {
-        new AlertDialog.Builder(this)
+        new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.research_consent_title)
                 .setMessage(R.string.research_consent_body)
                 .setPositiveButton("Got it", null)

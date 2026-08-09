@@ -18,12 +18,13 @@ import java.util.Set;
 public final class Achievements {
     private Achievements() { }
 
-    public static final int COUNT = 12;
+    public static final int COUNT = 16;
 
     public static final String[] NAMES = {
             "First Rep", "Sub-300 Club", "Sub-200 Club", "Sharpshooter",
             "Century", "3-Day Streak", "7-Day Streak", "Challenger",
-            "Marathon", "Elite Reflexes", "Rival Slayer", "Social Butterfly"
+            "Marathon", "Elite Reflexes", "Rival Slayer", "Social Butterfly",
+            "Iron Will", "Grinder", "Hard Mode Ace", "Consistent"
     };
 
     public static final String[] DESCRIPTIONS = {
@@ -39,13 +40,17 @@ public final class Achievements {
             "Log a best reaction time under 150ms",
             "Win 5 challenges against friends",
             "Add your first friend",
+            "Reach a 30-day streak",
+            "Complete 500 rounds total",
+            "Finish a Hard session with 100% accuracy",
+            "Log 10 Reaction training sessions",
     };
 
     /** Which avatar (index into Avatars.DRAWABLES) is shown for badge i on the Home shelf / Achievements list. */
-    public static final int[] BADGE_ICON_AVATAR_INDEX = { 0, 4, 7, 3, 5, 2, 1, 6, 8, 9, 10, 11 };
+    public static final int[] BADGE_ICON_AVATAR_INDEX = { 0, 4, 7, 3, 5, 2, 1, 6, 8, 9, 10, 11, 12, 13, 14, 15 };
 
     /** avatar index -> badge index required to unlock it in the Profile picker. -1 = always unlocked (the default). */
-    public static final int[] AVATAR_REQUIRES_BADGE = { -1, 6, 5, 3, 1, 4, 7, 2, 8, 9, 10, 11 };
+    public static final int[] AVATAR_REQUIRES_BADGE = { -1, 6, 5, 3, 1, 4, 7, 2, 8, 9, 10, 11, 12, 13, 14, 15 };
 
     public static boolean isAvatarUnlocked(int avatarIndex, boolean[] earned) {
         if (avatarIndex < 0 || avatarIndex >= AVATAR_REQUIRES_BADGE.length) return false;
@@ -100,13 +105,16 @@ public final class Achievements {
         out[0] = out[0] || !sessions.isEmpty();
 
         int totalRounds = 0;
-        boolean sub300 = false, sub200 = false, sub150 = false, perfect = false;
+        boolean sub300 = false, sub200 = false, sub150 = false, perfect = false, hardAce = false;
         for (TrainingSession s : sessions) {
             totalRounds += s.getTotalRounds();
             if (s.getBestReactionMs() > 0 && s.getBestReactionMs() < 300) sub300 = true;
             if (s.getBestReactionMs() > 0 && s.getBestReactionMs() < 200) sub200 = true;
             if (s.getBestReactionMs() > 0 && s.getBestReactionMs() < 150) sub150 = true;
-            if (s.getTotalRounds() > 0 && s.getCorrectRounds() == s.getTotalRounds()) perfect = true;
+            if (s.getTotalRounds() > 0 && s.getCorrectRounds() == s.getTotalRounds()) {
+                perfect = true;
+                if ("Hard".equals(s.getDifficulty())) hardAce = true;
+            }
         }
         out[1] = out[1] || sub300;
         out[2] = out[2] || sub200;
@@ -116,5 +124,9 @@ public final class Achievements {
         out[6] = out[6] || streakDays >= 7;
         out[8] = out[8] || streakDays >= 14;
         out[9] = out[9] || sub150;
+        out[12] = out[12] || streakDays >= 30;
+        out[13] = out[13] || totalRounds >= 500;
+        out[14] = out[14] || hardAce;
+        out[15] = out[15] || sessions.size() >= 10;
     }
 }

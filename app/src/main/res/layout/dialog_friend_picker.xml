@@ -7,12 +7,14 @@
     android:padding="20dp">
 
     <TextView
+        android:id="@+id/tvPickerEyebrow"
         style="@style/TextAppearance.ReflexTrainer.Eyebrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="NEW MESSAGE"/>
 
     <TextView
+        android:id="@+id/tvPickerSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
