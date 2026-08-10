@@ -1,0 +1,15 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+
+    <!-- badge: flame -->
+    <path
+        android:fillColor="@color/danger"
+        android:pathData="M0,20 A20,20 0 1,1 40,20 A20,20 0 1,1 0,20 Z"/>
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M20,9 C26,17 27,22 24,26 C22,29 18,29 16,26 C13,22 14,17 20,9 Z"/>
+</vector>
