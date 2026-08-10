@@ -15,9 +15,15 @@ import java.util.Locale;
 public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.ViewHolder> {
 
     private final List<LeaderboardEntry> entries;
+    private final String unit;
 
     public LeaderboardAdapter(List<LeaderboardEntry> entries) {
+        this(entries, "ms");
+    }
+
+    public LeaderboardAdapter(List<LeaderboardEntry> entries, String unit) {
         this.entries = entries;
+        this.unit = unit;
     }
 
     @NonNull
@@ -33,7 +39,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
         LeaderboardEntry e = entries.get(position);
         holder.tvRank.setText(String.valueOf(position + 1));
         holder.tvName.setText(e.getDisplayName());
-        holder.tvScore.setText(String.format(Locale.US, "%d ms", e.getBestReactionMs()));
+        holder.tvScore.setText(String.format(Locale.US, "%d %s", e.getBestReactionMs(), unit));
         holder.ivAvatar.setImageResource(Avatars.resFor(e.getAvatarId()));
     }
 

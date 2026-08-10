@@ -329,6 +329,9 @@ public class FatigueTrainingActivity extends AppCompatActivity {
             sessionRepository.saveSession(currentUserId, avg, best, totalAttempts, totalHits,
                     category.label, TrainingMode.FATIGUE.label);
         }
+        if (avg > 0) {
+            new LeaderboardManager("fatigue_leaderboard").submitScore(avg);
+        }
     }
 
     private void setupChart() {

@@ -12,26 +12,50 @@ import java.util.Map;
 
 public class LeaderboardManager {
 
-    private static final String COLLECTION = "leaderboard";
+    private final String collection;
+    private final boolean higherIsBetter;
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    /** Reaction-time leaderboard: lower score wins. */
+    public LeaderboardManager() {
+        this("leaderboard", false);
+    }
+
+    /** Time-based leaderboard in the given collection: lower score wins. */
+    public LeaderboardManager(String collection) {
+        this(collection, false);
+    }
+
     /**
-     * Submit a reaction time. Only overwrites the stored score if this one is
-     * faster (lower), so the leaderboard holds each user's best reaction time.
+     * @param collection     Firestore collection backing this leaderboard
+     * @param higherIsBetter true for score types like Simon Says' longest sequence,
+     *                       where a bigger number is the better result
      */
-    public void submitScore(int reactionMs) {
+    public LeaderboardManager(String collection, boolean higherIsBetter) {
+        this.collection = collection;
+        this.higherIsBetter = higherIsBetter;
+    }
+
+    /**
+     * Submit a score. Only overwrites the stored score if this one is better
+     * (per {@link #higherIsBetter}), so the leaderboard holds each user's best result.
+     */
+    public void submitScore(int score) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null || reactionMs <= 0) return;   // ignore invalid times
+        if (user == null || score <= 0) return;   // ignore invalid scores
 
         String uid = user.getUid();
 
-        db.collection(COLLECTION).document(uid).get()
+        db.collection(collection).document(uid).get()
                 .addOnSuccessListener(snapshot -> {
                     boolean shouldWrite = true;
                     if (snapshot.exists()) {
                         Long existing = snapshot.getLong("bestReactionMs");
-                        if (existing != null && existing <= reactionMs) {
-                            shouldWrite = false;   // stored time is already faster
+                        if (existing != null) {
+                            boolean existingIsBetterOrEqual = higherIsBetter
+                                    ? existing >= score
+                                    : existing <= score;
+                            if (existingIsBetterOrEqual) shouldWrite = false;
                         }
                     }
                     if (shouldWrite) {
@@ -47,9 +71,9 @@ public class LeaderboardManager {
 
                                     Map<String, Object> entry = new HashMap<>();
                                     entry.put("displayName", name);
-                                    entry.put("bestReactionMs", reactionMs);
+                                    entry.put("bestReactionMs", score);
                                     entry.put("avatarId", avatarId);
-                                    db.collection(COLLECTION).document(uid).set(entry);
+                                    db.collection(collection).document(uid).set(entry);
                                 });
                     }
                 });
@@ -60,10 +84,14 @@ public class LeaderboardManager {
         void onError(String message);
     }
 
-    /** Read the top scores, fastest reaction first. */
+    private Query.Direction sortDirection() {
+        return higherIsBetter ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
+    }
+
+    /** Read the top scores, best result first. */
     public void loadLeaderboard(LeaderboardCallback callback) {
-        db.collection(COLLECTION)
-                .orderBy("bestReactionMs", Query.Direction.ASCENDING)
+        db.collection(collection)
+                .orderBy("bestReactionMs", sortDirection())
                 .limit(50)
                 .get()
                 .addOnSuccessListener(query -> {
@@ -76,8 +104,8 @@ public class LeaderboardManager {
 
     /** Load only the entries for the given set of uids (friends + me). */
     public void loadFriendsLeaderboard(java.util.Set<String> allowedUids, LeaderboardCallback callback) {
-        db.collection(COLLECTION)
-                .orderBy("bestReactionMs", Query.Direction.ASCENDING)
+        db.collection(collection)
+                .orderBy("bestReactionMs", sortDirection())
                 .get()
                 .addOnSuccessListener(query -> {
                     List<LeaderboardEntry> list = new ArrayList<>();
@@ -96,12 +124,12 @@ public class LeaderboardManager {
         void onError(String message);
     }
 
-    /** Fetch my own best average from the leaderboard. */
+    /** Fetch my own best score from the leaderboard. */
     public void getMyBestScore(ScoreCallback callback) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) { callback.onError("Not signed in"); return; }
 
-        db.collection(COLLECTION).document(user.getUid()).get()
+        db.collection(collection).document(user.getUid()).get()
                 .addOnSuccessListener(doc -> {
                     if (doc.exists() && doc.getLong("bestReactionMs") != null) {
                         callback.onResult(doc.getLong("bestReactionMs").intValue());
