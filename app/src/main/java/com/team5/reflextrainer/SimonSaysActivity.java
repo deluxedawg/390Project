@@ -23,7 +23,7 @@ import java.util.Random;
 public class SimonSaysActivity extends AppCompatActivity implements ESPBluetoothManager.Listener {
 
     private static final int NUM_TARGETS = 4;       // buttons 0-3
-    private static final int STEP_DISPLAY_MS = 600; // how long each pattern step shows
+    private static final int STEP_DISPLAY_MS = 300; // how long each pattern step shows
 
     private TextView tvRound, tvInstruction;
     private Button btnStart;
@@ -83,9 +83,16 @@ public class SimonSaysActivity extends AppCompatActivity implements ESPBluetooth
         acceptingInput = false;
         displayIndex = 0;
         tvInstruction.setText("Watch...");
+        sendFlashSequenceToDevice();
         handler.postDelayed(this::playNextPatternStep, 400);
     }
 
+    private void sendFlashSequenceToDevice() {
+        if (!ESPBluetoothManager.getInstance().isConnected()) return;
+        byte[] seqArray = new byte[sequence.size()];
+        for (int i = 0; i < sequence.size(); i++) seqArray[i] = sequence.get(i);
+        ESPBluetoothManager.getInstance().sendFlashSequence(seqArray);
+    }
     private void playNextPatternStep() {
         if (displayIndex >= sequence.size()) {
             tvInstruction.setText("Your turn!");

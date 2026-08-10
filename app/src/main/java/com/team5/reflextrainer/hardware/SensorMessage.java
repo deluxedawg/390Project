@@ -1,5 +1,6 @@
 package com.team5.reflextrainer.hardware;
 
+
 /**
  * Parses and builds the 6-byte messages exchanged with the ESP32 reflex sensor.
  *
@@ -49,6 +50,7 @@ public class SensorMessage {
 
     public static final byte MSG_START_SIMON = 0x04;
     public static final byte RESP_SIMON_PROGRESS = (byte) 0x83;
+    public static final byte CMD_FLASH_SEQUENCE = 0x07;
     private SensorMessage(byte response, byte targetId, int reactionTimeMs) {
         this.response = response;
         this.targetId = targetId;
@@ -161,4 +163,19 @@ public class SensorMessage {
         frame[frame.length - 1] = checksum;
         return frame;
     }
+    public static byte[] buildFlashSequence(byte[] sequence) {
+        byte length = (byte) sequence.length;
+        byte[] frame = new byte[3 + sequence.length + 1];
+        frame[0] = START_BYTE;
+        frame[1] = CMD_FLASH_SEQUENCE;
+        frame[2] = length;
+        byte checksum = (byte) (CMD_FLASH_SEQUENCE ^ length);
+        for (int i = 0; i < sequence.length; i++) {
+            frame[3 + i] = sequence[i];
+            checksum ^= sequence[i];
+        }
+        frame[frame.length - 1] = checksum;
+        return frame;
+    }
+
 }

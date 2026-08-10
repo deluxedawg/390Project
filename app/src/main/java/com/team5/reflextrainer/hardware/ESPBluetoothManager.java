@@ -211,5 +211,9 @@ public class ESPBluetoothManager {
     public void sendStartSimon(byte[] sequence) {
         send(SensorMessage.buildStartSimon(sequence));
     }
+
+    public void sendFlashSequence(byte[] sequence) {
+        send(SensorMessage.buildFlashSequence(sequence));
+    }
 }
 
