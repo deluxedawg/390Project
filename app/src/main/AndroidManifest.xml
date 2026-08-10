@@ -45,6 +45,7 @@
         <activity android:name=".FriendsActivity" android:exported="false" android:screenOrientation="sensor" />
         <activity android:name=".LevelSelectActivity" android:exported="false" android:screenOrientation="sensor" />
         <activity android:name=".SummaryActivity" android:exported="false" android:screenOrientation="sensor" />
+        <activity android:name=".SessionDetailActivity" android:exported="false" android:screenOrientation="sensor" />
         <activity android:name=".ChallengesActivity" android:exported="false" android:screenOrientation="sensor" />
         <activity android:name=".ChallengeResultActivity" android:exported="false" android:screenOrientation="sensor" />
         <activity android:name=".ModeSelectActivity" android:exported="false" android:screenOrientation="sensor" />

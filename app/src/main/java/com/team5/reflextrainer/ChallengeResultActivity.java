@@ -3,9 +3,12 @@ package com.team5.reflextrainer;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
 
@@ -16,6 +19,7 @@ public class ChallengeResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_challenge_result);
 
+        boolean viewOnly = getIntent().getBooleanExtra("viewOnly", false);
         boolean won = getIntent().getBooleanExtra("won", false);
         boolean tie = getIntent().getBooleanExtra("tie", false);
         int myScore = getIntent().getIntExtra("myScore", 0);
@@ -55,23 +59,34 @@ public class ChallengeResultActivity extends AppCompatActivity {
         final String difficulty = getIntent().getStringExtra("difficulty");
         final ArrayList<Integer> rounds = getIntent().getIntegerArrayListExtra("rounds");
 
-        findViewById(R.id.btnDetails).setOnClickListener(v -> {
-            Intent i = new Intent(this, SummaryActivity.class);
-            i.putExtra("avg", avg);
-            i.putExtra("best", best);
-            i.putExtra("total", total);
-            i.putExtra("correct", correct);
-            i.putExtra("difficulty", difficulty);
-            i.putIntegerArrayListExtra("rounds", rounds == null ? new ArrayList<>() : rounds);
-            startActivity(i);
-            finish();
-        });
+        View btnDetails = findViewById(R.id.btnDetails);
+        MaterialButton btnHome = findViewById(R.id.btnHome);
 
-        findViewById(R.id.btnHome).setOnClickListener(v -> {
-            Intent i = new Intent(this, MainActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(i);
-            finish();
-        });
+        if (viewOnly) {
+            // browsing an already-completed challenge from the Challenges tab: no per-round
+            // data survives past the summary screen, and we shouldn't blow away the back stack.
+            btnDetails.setVisibility(View.GONE);
+            btnHome.setText("Close");
+            btnHome.setOnClickListener(v -> finish());
+        } else {
+            btnDetails.setOnClickListener(v -> {
+                Intent i = new Intent(this, SummaryActivity.class);
+                i.putExtra("avg", avg);
+                i.putExtra("best", best);
+                i.putExtra("total", total);
+                i.putExtra("correct", correct);
+                i.putExtra("difficulty", difficulty);
+                i.putIntegerArrayListExtra("rounds", rounds == null ? new ArrayList<>() : rounds);
+                startActivity(i);
+                finish();
+            });
+
+            btnHome.setOnClickListener(v -> {
+                Intent i = new Intent(this, MainActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(i);
+                finish();
+            });
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.team5.reflextrainer;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -206,10 +207,22 @@ public class HistoryActivity extends AppCompatActivity {
             chart.setVisibility(View.GONE);
         } else {
             tvNoHistory.setVisibility(View.GONE);
-            rv.setAdapter(new HistoryAdapter(filtered));
+            rv.setAdapter(new HistoryAdapter(filtered, this::openSessionDetail));
             setupHistoryChart(chart, filtered);
             updateListOrChartVisibility();
         }
+    }
+
+    private void openSessionDetail(TrainingSession s) {
+        Intent i = new Intent(this, SessionDetailActivity.class);
+        i.putExtra(SessionDetailActivity.EXTRA_AVG, s.getAvgReactionMs());
+        i.putExtra(SessionDetailActivity.EXTRA_BEST, s.getBestReactionMs());
+        i.putExtra(SessionDetailActivity.EXTRA_TOTAL, s.getTotalRounds());
+        i.putExtra(SessionDetailActivity.EXTRA_CORRECT, s.getCorrectRounds());
+        i.putExtra(SessionDetailActivity.EXTRA_DIFFICULTY, s.getDifficulty());
+        i.putExtra(SessionDetailActivity.EXTRA_MODE, s.getMode());
+        i.putExtra(SessionDetailActivity.EXTRA_TIMESTAMP, s.getTimestamp());
+        startActivity(i);
     }
 
     private void updateListOrChartVisibility() {

@@ -14,12 +14,16 @@ import java.util.List;
 public class CompletedChallengeAdapter
         extends RecyclerView.Adapter<CompletedChallengeAdapter.VH> {
 
+    public interface Listener { void onOpen(Challenge challenge); }
+
     private final List<Challenge> items;
     private final String myUid;
+    private final Listener listener;
 
-    public CompletedChallengeAdapter(List<Challenge> items, String myUid) {
+    public CompletedChallengeAdapter(List<Challenge> items, String myUid, Listener listener) {
         this.items = items;
         this.myUid = myUid;
+        this.listener = listener;
     }
 
     @NonNull
@@ -52,6 +56,8 @@ public class CompletedChallengeAdapter
             h.outcome.setText("LOST");
             h.outcome.setTextColor(Color.parseColor("#FF4557"));
         }
+
+        h.itemView.setOnClickListener(v -> listener.onOpen(c));
     }
 
     @Override

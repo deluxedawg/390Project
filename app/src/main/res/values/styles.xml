@@ -83,4 +83,24 @@
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
     </style>
 
+    <!-- dark-surface alert dialog: title/body forced to text_primary since colorOnSurface
+         alone wasn't reliably reaching the title text -->
+    <style name="ThemeOverlay.ReflexTrainer.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.ReflexTrainer.Title.Text</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.ReflexTrainer.Body.Text</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.Material3.Button.TextButton.Dialog</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.Material3.Button.TextButton.Dialog</item>
+    </style>
+
+    <style name="MaterialAlertDialog.ReflexTrainer.Title.Text" parent="MaterialAlertDialog.Material3.Title.Text">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="MaterialAlertDialog.ReflexTrainer.Body.Text" parent="MaterialAlertDialog.Material3.Body.Text">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
 </resources>

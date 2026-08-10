@@ -7,6 +7,9 @@
         <item name="colorSecondary">@color/accent</item>
         <item name="android:colorBackground">@color/bg</item>
         <item name="colorSurface">@color/surface</item>
+        <item name="colorOnBackground">@color/text_primary</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
         <item name="colorError">@color/danger</item>
         <item name="android:statusBarColor">@color/bg</item>
         <item name="android:windowLightStatusBar">false</item>
@@ -14,6 +17,8 @@
         <!-- default text colors -->
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
+
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.ReflexTrainer.MaterialAlertDialog</item>
     </style>
 
 </resources>
