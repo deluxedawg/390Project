@@ -27,6 +27,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.team5.reflextrainer.data.TrainingMode;
 import com.team5.reflextrainer.data.TrainingSessionRepository;
+import com.team5.reflextrainer.hardware.ESPBluetoothManager;
+import com.team5.reflextrainer.hardware.SensorMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +39,7 @@ import java.util.Random;
  * result screen. Saved to History like any other mode, tagged with {@link TrainingMode#FATIGUE}
  * and the body-part category as its "difficulty" detail.
  */
-public class FatigueTrainingActivity extends AppCompatActivity {
+public class FatigueTrainingActivity extends AppCompatActivity implements ESPBluetoothManager.Listener {
 
     private static final int NUM_ROUNDS = 3;
     private static final int REACT_ATTEMPTS_PER_ROUND = 5;
@@ -71,11 +73,10 @@ public class FatigueTrainingActivity extends AppCompatActivity {
     private int totalHits = 0;       // across all checkpoints, for the saved session's correctRounds
 
     private CountDownTimer countDownTimer;
-    private long reactStartMs;
-    private Runnable reactTimeoutRunnable;
 
     private TrainingSessionRepository sessionRepository;
     private String currentUserId;
+    private byte currentReactTarget;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +113,7 @@ public class FatigueTrainingActivity extends AppCompatActivity {
         tvRound3Result = findViewById(R.id.tvRound3Result);
         chartFatigue = findViewById(R.id.chartFatigue);
 
-        tvReactBox.setOnClickListener(v -> onReactTap());
+
         btnBack.setOnClickListener(v -> finish());
         btnDone.setOnClickListener(v -> finish());
 
@@ -225,29 +226,37 @@ public class FatigueTrainingActivity extends AppCompatActivity {
         tvReactAttempt.setText("REACTION TEST — ATTEMPT " + (reactAttempt + 1) + " OF " + REACT_ATTEMPTS_PER_ROUND);
 
         tvReactBox.setVisibility(View.VISIBLE);
-        tvReactBox.setText("Wait...");
+        tvReactBox.setText("Get ready...");
         tvReactBox.setTextColor(getColor(R.color.danger));
 
-        int delay = 800 + random.nextInt(1500);
-        handler.postDelayed(() -> {
-            phase = Phase.REACT_GO;
-            tvReactBox.setText("TAP NOW!");
-            tvReactBox.setTextColor(getColor(R.color.accent));
-            reactStartMs = System.currentTimeMillis();
+        if (!ESPBluetoothManager.getInstance().isConnected()) {
+            tvReactBox.setText("Sensor not connected");
+            return;
+        }
 
-            reactTimeoutRunnable = () -> {
-                if (phase == Phase.REACT_GO) recordReactAttempt(MISS);
-            };
-            handler.postDelayed(reactTimeoutRunnable, REACT_TIMEOUT_MS);
-        }, delay);
+        currentReactTarget = pickRandomTarget();
+        ESPBluetoothManager.getInstance().sendStartChallenge(currentReactTarget, REACT_TIMEOUT_MS);
     }
 
-    private void onReactTap() {
-        if (phase != Phase.REACT_GO) return;
-        if (reactTimeoutRunnable != null) handler.removeCallbacks(reactTimeoutRunnable);
-        int elapsed = (int) (System.currentTimeMillis() - reactStartMs);
-        recordReactAttempt(elapsed);
+    private byte pickRandomTarget() {
+        int roll = random.nextInt(9);
+        if (roll == 0) return SensorMessage.TARGET_SHAKE_IMU;
+        if (roll == 1) return SensorMessage.TARGET_JOY_UP;
+        if (roll == 2) return SensorMessage.TARGET_JOY_DOWN;
+        if (roll == 3) return SensorMessage.TARGET_JOY_LEFT;
+        if (roll == 4) return SensorMessage.TARGET_JOY_RIGHT;
+        return (byte) random.nextInt(4); // regular buttons 0-3
     }
+
+    private String describeTarget(byte targetId) {
+        if (targetId == SensorMessage.TARGET_SHAKE_IMU) return "SHAKE IT";
+        if (targetId == SensorMessage.TARGET_JOY_UP) return "\u2191 PUSH UP";
+        if (targetId == SensorMessage.TARGET_JOY_DOWN) return "\u2193 PUSH DOWN";
+        if (targetId == SensorMessage.TARGET_JOY_LEFT) return "\u2190 PUSH LEFT";
+        if (targetId == SensorMessage.TARGET_JOY_RIGHT) return "\u2192 PUSH RIGHT";
+        return "Press button " + targetId;
+    }
+
 
     /** Records one of the 5 raw attempts, shows brief feedback, then moves to the next attempt or checkpoint. */
     private void recordReactAttempt(int ms) {
@@ -383,10 +392,50 @@ public class FatigueTrainingActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        ESPBluetoothManager.getInstance().setListener(this);
+    }
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacksAndMessages(null);
         if (countDownTimer != null) countDownTimer.cancel();
         videoDemo.stopPlayback();
+        ESPBluetoothManager.getInstance().sendReset();
+    }
+
+    @Override
+    public void onMessage(SensorMessage message) {
+        runOnUiThread(() -> handleMessage(message));
+    }
+
+    private void handleMessage(SensorMessage message) {
+        if (message.response == SensorMessage.RESP_ACK) {
+            if (phase == Phase.REACT_WAIT) {
+                phase = Phase.REACT_GO;
+                tvReactBox.setText(describeTarget(message.targetId) + "!");
+                tvReactBox.setTextColor(getColor(R.color.accent));
+            }
+            return;
+        }
+
+        if (message.response == SensorMessage.RESP_RESULT && phase == Phase.REACT_GO) {
+            int elapsed = message.reactionTimeMs;
+            if (message.targetId == SensorMessage.OUTCOME_TIMEOUT) {
+                recordReactAttempt(MISS);
+            } else if (message.targetId == SensorMessage.OUTCOME_CORRECT) {
+                recordReactAttempt(elapsed);
+            } else {
+                recordReactAttempt(MISS);
+            }
+        }
+    }
+
+    @Override
+    public void onConnectionChanged(boolean connected, boolean connecting) {
+        if (!connected) {
+            runOnUiThread(() -> tvReactBox.setText("Sensor disconnected"));
+        }
     }
 }
