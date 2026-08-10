@@ -46,7 +46,7 @@ public class HistoryActivity extends AppCompatActivity {
     private View cardFilters;
     private TabLayout tabs;
     private LineChart chart;
-    private MaterialButtonToggleGroup toggleModes;
+    private MaterialButtonToggleGroup toggleModesRow1, toggleModesRow2;
     private MaterialButton btnDateFrom, btnDateTo;
     private RangeSlider sliderScore;
     private TextView tvScoreRange;
@@ -71,7 +71,8 @@ public class HistoryActivity extends AppCompatActivity {
         cardFilters = findViewById(R.id.cardFilters);
         tabs = findViewById(R.id.tabHistory);
         chart = findViewById(R.id.chartHistory);
-        toggleModes = findViewById(R.id.toggleModes);
+        toggleModesRow1 = findViewById(R.id.toggleModesRow1);
+        toggleModesRow2 = findViewById(R.id.toggleModesRow2);
         btnDateFrom = findViewById(R.id.btnDateFrom);
         btnDateTo = findViewById(R.id.btnDateTo);
         sliderScore = findViewById(R.id.sliderScore);
@@ -89,7 +90,8 @@ public class HistoryActivity extends AppCompatActivity {
             return;
         }
 
-        toggleModes.addOnButtonCheckedListener((group, checkedId, isChecked) -> applyFilters());
+        toggleModesRow1.addOnButtonCheckedListener((group, checkedId, isChecked) -> applyFilters());
+        toggleModesRow2.addOnButtonCheckedListener((group, checkedId, isChecked) -> applyFilters());
         btnDateFrom.setOnClickListener(v -> pickDate(true));
         btnDateTo.setOnClickListener(v -> pickDate(false));
         sliderScore.addOnChangeListener((slider, value, fromUser) -> applyFilters());
@@ -164,8 +166,11 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     private void clearFilters() {
-        for (int i = 0; i < toggleModes.getChildCount(); i++) {
-            ((MaterialButton) toggleModes.getChildAt(i)).setChecked(true);
+        for (int i = 0; i < toggleModesRow1.getChildCount(); i++) {
+            ((MaterialButton) toggleModesRow1.getChildAt(i)).setChecked(true);
+        }
+        for (int i = 0; i < toggleModesRow2.getChildCount(); i++) {
+            ((MaterialButton) toggleModesRow2.getChildAt(i)).setChecked(true);
         }
         fromDateMs = null;
         toDateMs = null;
@@ -179,10 +184,14 @@ public class HistoryActivity extends AppCompatActivity {
         if (allSessions.isEmpty()) return;
 
         Set<String> selectedModes = new HashSet<>();
-        for (int id : toggleModes.getCheckedButtonIds()) {
+        List<Integer> checkedIds = new ArrayList<>();
+        checkedIds.addAll(toggleModesRow1.getCheckedButtonIds());
+        checkedIds.addAll(toggleModesRow2.getCheckedButtonIds());
+        for (int id : checkedIds) {
             if (id == R.id.btnModeReaction) selectedModes.add(TrainingMode.REACTION.label);
             else if (id == R.id.btnModeRhythm) selectedModes.add(TrainingMode.RHYTHM.label);
             else if (id == R.id.btnModeFatigue) selectedModes.add(TrainingMode.FATIGUE.label);
+            else if (id == R.id.btnModeSimon) selectedModes.add(TrainingMode.SIMON_CUMULATIVE.label);
         }
 
         List<Float> range = sliderScore.getValues();

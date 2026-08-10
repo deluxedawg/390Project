@@ -25,14 +25,14 @@
         android:layout_marginTop="2dp"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Reaction vs Rhythm -->
+    <!-- Reaction / Rhythm / Fatigue / Simon, two per row so labels aren't cramped -->
     <com.google.android.material.button.MaterialButtonToggleGroup
-        android:id="@+id/toggleMode"
+        android:id="@+id/toggleModeRow1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:singleSelection="true"
-        app:selectionRequired="true"
-        android:layout_marginBottom="12dp">
+        app:selectionRequired="false"
+        android:layout_marginBottom="8dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/modeReaction"
@@ -49,6 +49,32 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="Rhythm"/>
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleModeRow2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:singleSelection="true"
+        app:selectionRequired="false"
+        android:layout_marginBottom="12dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/modeFatigue"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Fatigue"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/modeSimon"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Simon"/>
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
 

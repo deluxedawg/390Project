@@ -24,8 +24,11 @@ public class LeaderboardActivity extends AppCompatActivity {
 
     private final LeaderboardManager reactionLm = new LeaderboardManager();
     private final RhythmLeaderboardManager rhythmLm = new RhythmLeaderboardManager();
+    private final LeaderboardManager fatigueLm = new LeaderboardManager("fatigue_leaderboard");
+    private final LeaderboardManager simonLm = new LeaderboardManager("simon_leaderboard", true);
 
-    private boolean rhythmMode = false;   // false = Reaction, true = Rhythm
+    private enum Mode { REACTION, RHYTHM, FATIGUE, SIMON }
+    private Mode mode = Mode.REACTION;
     private boolean friendsScope = false; // false = Global, true = Friends
 
     @Override
@@ -39,11 +42,21 @@ public class LeaderboardActivity extends AppCompatActivity {
 
         findViewById(R.id.btnBackHome).setOnClickListener(v -> finish());
 
-        MaterialButtonToggleGroup toggleMode = findViewById(R.id.toggleMode);
-        toggleMode.check(R.id.modeReaction);
-        toggleMode.addOnButtonCheckedListener((g, id, checked) -> {
+        // two rows of two buttons (instead of cramming four into one row) so
+        // labels render in full; the rows are kept mutually exclusive in code
+        MaterialButtonToggleGroup toggleModeRow1 = findViewById(R.id.toggleModeRow1);
+        MaterialButtonToggleGroup toggleModeRow2 = findViewById(R.id.toggleModeRow2);
+        toggleModeRow1.check(R.id.modeReaction);
+        toggleModeRow1.addOnButtonCheckedListener((g, id, checked) -> {
             if (!checked) return;
-            rhythmMode = (id == R.id.modeRhythm);
+            toggleModeRow2.clearChecked();
+            mode = (id == R.id.modeRhythm) ? Mode.RHYTHM : Mode.REACTION;
+            load();
+        });
+        toggleModeRow2.addOnButtonCheckedListener((g, id, checked) -> {
+            if (!checked) return;
+            toggleModeRow1.clearChecked();
+            mode = (id == R.id.modeSimon) ? Mode.SIMON : Mode.FATIGUE;
             load();
         });
 
@@ -67,10 +80,11 @@ public class LeaderboardActivity extends AppCompatActivity {
     }
 
     private void loadGlobal() {
-        if (rhythmMode) {
-            rhythmLm.loadLeaderboard(cb());
-        } else {
-            reactionLm.loadLeaderboard(cb());
+        switch (mode) {
+            case RHYTHM: rhythmLm.loadLeaderboard(cb()); break;
+            case FATIGUE: fatigueLm.loadLeaderboard(cb()); break;
+            case SIMON: simonLm.loadLeaderboard(cb()); break;
+            default: reactionLm.loadLeaderboard(cb());
         }
     }
 
@@ -85,10 +99,11 @@ public class LeaderboardActivity extends AppCompatActivity {
                 uids.add(me.getUid());
                 for (UserProfile f : friends) uids.add(f.getUid());
 
-                if (rhythmMode) {
-                    rhythmLm.loadFriendsLeaderboard(uids, cb());
-                } else {
-                    reactionLm.loadFriendsLeaderboard(uids, cb());
+                switch (mode) {
+                    case RHYTHM: rhythmLm.loadFriendsLeaderboard(uids, cb()); break;
+                    case FATIGUE: fatigueLm.loadFriendsLeaderboard(uids, cb()); break;
+                    case SIMON: simonLm.loadFriendsLeaderboard(uids, cb()); break;
+                    default: reactionLm.loadFriendsLeaderboard(uids, cb());
                 }
             }
             @Override public void onError(String m) { toast(m); }
@@ -110,7 +125,8 @@ public class LeaderboardActivity extends AppCompatActivity {
         } else {
             tvEmpty.setVisibility(View.GONE);
             rv.setVisibility(View.VISIBLE);
-            rv.setAdapter(new LeaderboardAdapter(entries));
+            String unit = (mode == Mode.SIMON) ? "rounds" : "ms";
+            rv.setAdapter(new LeaderboardAdapter(entries, unit));
         }
     }
 

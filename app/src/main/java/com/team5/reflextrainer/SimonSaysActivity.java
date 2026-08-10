@@ -164,6 +164,10 @@ public class SimonSaysActivity extends AppCompatActivity implements ESPBluetooth
                 "Cumulative",
                 TrainingMode.SIMON_CUMULATIVE.label
         );
+
+        if (maxSequenceLength > 0) {
+            new LeaderboardManager("simon_leaderboard", true).submitScore(maxSequenceLength);
+        }
     }
 
     @Override

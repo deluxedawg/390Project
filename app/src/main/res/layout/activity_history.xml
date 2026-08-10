@@ -59,12 +59,12 @@
                 android:text="MODE"/>
 
             <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/toggleModes"
+                android:id="@+id/toggleModesRow1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:singleSelection="false"
                 android:layout_marginTop="6dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="8dp">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnModeReaction"
@@ -84,6 +84,15 @@
                     android:checked="true"
                     android:text="Rhythm"/>
 
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toggleModesRow2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:singleSelection="false"
+                android:layout_marginBottom="16dp">
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnModeFatigue"
                     style="?attr/materialButtonOutlinedStyle"
@@ -92,6 +101,15 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="Fatigue"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnModeSimon"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="Simon"/>
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
