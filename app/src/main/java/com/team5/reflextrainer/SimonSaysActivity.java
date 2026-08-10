@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -36,6 +37,8 @@ public class SimonSaysActivity extends AppCompatActivity implements ESPBluetooth
 
     private TrainingSessionRepository sessionRepository;
     private String currentUserId;
+
+    private boolean acceptingInput = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,24 +79,39 @@ public class SimonSaysActivity extends AppCompatActivity implements ESPBluetooth
     }
 
     private void showPattern() {
+        handler.removeCallbacksAndMessages(null);
+        acceptingInput = false;
         displayIndex = 0;
         tvInstruction.setText("Watch...");
-        handler.postDelayed(this::playNextPatternStep, 500);
+        handler.postDelayed(this::playNextPatternStep, 400);
     }
 
     private void playNextPatternStep() {
         if (displayIndex >= sequence.size()) {
             tvInstruction.setText("Your turn!");
+            acceptingInput = true;
+            tvInstruction.setBackgroundColor(getColor(android.R.color.transparent));
             sendSequenceToDevice();
             return;
         }
         byte step = sequence.get(displayIndex);
-        tvInstruction.setText("Button " + step);
+        tvInstruction.setText("");
+        tvInstruction.setBackgroundColor(colorForStep(step));
         displayIndex++;
         handler.postDelayed(() -> {
-            tvInstruction.setText(""); // brief blank between steps
+            tvInstruction.setBackgroundColor(getColor(android.R.color.transparent));
             handler.postDelayed(this::playNextPatternStep, 200);
         }, STEP_DISPLAY_MS);
+    }
+
+    private int colorForStep(byte step) {
+        switch (step) {
+            case 0: return getColor(android.R.color.holo_green_light);
+            case 1: return getColor(android.R.color.holo_blue_light);
+            case 2: return getColor(android.R.color.holo_orange_light);
+            case 3: return getColor(android.R.color.holo_red_light);
+            default: return getColor(android.R.color.transparent);
+        }
     }
 
     private void sendSequenceToDevice() {
@@ -109,14 +127,18 @@ public class SimonSaysActivity extends AppCompatActivity implements ESPBluetooth
 
     @Override
     public void onMessage(SensorMessage message) {
+        Log.e("SIMON_DEBUG", "onMessage: response=0x" + Integer.toHexString(message.response & 0xFF)
+                + " targetId=" + message.targetId); // ADD
         runOnUiThread(() -> handleMessage(message));
     }
 
     private void handleMessage(SensorMessage message) {
+        if (!acceptingInput) return;
         if (message.response == SensorMessage.RESP_SIMON_PROGRESS) {
             tvInstruction.setText("Correct (" + message.targetId + "/" + sequence.size() + ")");
         }
         if (message.response == SensorMessage.RESP_RESULT) {
+            Log.e("SIMON_DEBUG", "RESULT branch: targetId=" + message.targetId + " OUTCOME_CORRECT=" + SensorMessage.OUTCOME_CORRECT + " match=" + (message.targetId == SensorMessage.OUTCOME_CORRECT));
             if (message.targetId == SensorMessage.OUTCOME_CORRECT) {
                 maxSequenceLength = sequence.size();
                 tvInstruction.setText("Sequence complete!");

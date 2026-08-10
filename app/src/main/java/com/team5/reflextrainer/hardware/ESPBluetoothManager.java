@@ -108,26 +108,52 @@ public class ESPBluetoothManager {
     }
 
     private void listenLoop() {
-        byte[] buffer = new byte[16];
-        while(running){
+        byte[] readBuf = new byte[64];
+        java.io.ByteArrayOutputStream frameBuffer = new java.io.ByteArrayOutputStream();
+
+        while (running) {
             try {
-                int bytesRead = inputStream.read(buffer);
+                int bytesRead = inputStream.read(readBuf);
                 if (bytesRead <= 0) break;
 
-                byte[] frame = new byte[bytesRead];
-                System.arraycopy(buffer, 0, frame, 0, bytesRead);
+                frameBuffer.write(readBuf, 0, bytesRead);
+                byte[] all = frameBuffer.toByteArray();
 
-                SensorMessage msg = SensorMessage.parse(frame);
-                if (msg != null && listener != null) {
-                    listener.onMessage(msg);
+                int consumed = 0;
+                while (consumed < all.length) {
+                    if (all[consumed] != SensorMessage.START_BYTE) {
+                        consumed++;
+                        continue;
+                    }
+                    if (consumed + 1 >= all.length) break;
+
+                    int msgType = all[consumed + 1] & 0xFF;
+                    int frameLen = (msgType == (SensorMessage.RESP_ACK & 0xFF)
+                            || msgType == (SensorMessage.RESP_SIMON_PROGRESS & 0xFF)) ? 4 : 6;
+
+                    if (consumed + frameLen > all.length) break;
+
+                    byte[] frame = new byte[frameLen];
+                    System.arraycopy(all, consumed, frame, 0, frameLen);
+                    SensorMessage msg = SensorMessage.parse(frame);
+                    if (msg != null && listener != null) {
+                        listener.onMessage(msg);
+                    }
+                    consumed += frameLen;
                 }
-            }catch(IOException e){
-                Log.w(TAG, "READ failed, connection dropped", e);
+
+
+                byte[] remaining = java.util.Arrays.copyOfRange(all, consumed, all.length);
+                frameBuffer.reset();
+                frameBuffer.write(remaining);
+
+            } catch (IOException e) {
+                Log.w(TAG, "Read failed", e);
                 break;
             }
         }
         running = false;
-        if(listener != null) listener.onConnectionChanged(false, false);
+        if (listener != null) listener.onConnectionChanged(false, false);
     }
 
     public void send(byte[] frame){
