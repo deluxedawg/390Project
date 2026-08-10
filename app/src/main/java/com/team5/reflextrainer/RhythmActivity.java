@@ -6,6 +6,7 @@ import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -15,11 +16,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.team5.reflextrainer.data.TrainingMode;
 import com.team5.reflextrainer.data.TrainingSessionRepository;
+import com.team5.reflextrainer.hardware.ESPBluetoothManager;
+import com.team5.reflextrainer.hardware.SensorMessage;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RhythmActivity extends AppCompatActivity {
+public class RhythmActivity extends AppCompatActivity implements ESPBluetoothManager.Listener {
 
     private TextView tvPhase, tvInstruction, tvFeedback;
     private Button btnAction;
@@ -50,6 +53,8 @@ public class RhythmActivity extends AppCompatActivity {
     private enum Phase { IDLE, LISTEN, REPLICATE, DONE }
     private Phase phase = Phase.IDLE;
     private Runnable onPhaseComplete;
+
+    private long playbackStartRealtimeMs = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +93,28 @@ public class RhythmActivity extends AppCompatActivity {
         btnBackHome.setOnClickListener(v -> finish());
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ESPBluetoothManager.getInstance().setListener(this);
+    }
+
+    @Override
+    public void onConnectionChanged(boolean connected, boolean connecting) {
+        // optional: show a "sensor disconnected" state if you want
+    }
+
+    @Override
+    public void onMessage(SensorMessage message) {
+        runOnUiThread(() -> handleMessage(message));
+    }
+
+    private void handleMessage(SensorMessage message) {
+        if (message.response == SensorMessage.RESP_BUTTON_PRESS) {
+            Log.e("RHYTHM_DEBUG", "Received at " + System.currentTimeMillis());
+            onHardwareTap();
+        }
+    }
     // ---------------- LISTEN ----------------
 
     private void startListen() {
@@ -123,6 +150,8 @@ public class RhythmActivity extends AppCompatActivity {
         tvFeedback.setText("");
         btnAction.setEnabled(false);
 
+        ESPBluetoothManager.getInstance().sendRhythmModeOn();
+
         playTrack(() -> runOnUiThread(this::finishSession));
     }
 
@@ -133,6 +162,7 @@ public class RhythmActivity extends AppCompatActivity {
         onPhaseComplete = onComplete;
         mediaPlayer = MediaPlayer.create(this, track.rawResId);
         mediaPlayer.start();
+        playbackStartRealtimeMs = System.currentTimeMillis();
         handler.post(beatWatcher);
     }
 
@@ -150,9 +180,7 @@ public class RhythmActivity extends AppCompatActivity {
         @Override
         public void run() {
             if (mediaPlayer == null) return;
-            long pos;
-            try { pos = mediaPlayer.getCurrentPosition(); }
-            catch (Exception e) { return; }
+            long pos = System.currentTimeMillis() - playbackStartRealtimeMs;
 
             while (nextBeatIndex < beatTimes.size()
                     && pos >= beatTimes.get(nextBeatIndex)) {
@@ -160,11 +188,10 @@ public class RhythmActivity extends AppCompatActivity {
                 nextBeatIndex++;
             }
 
-            // once we're past the last beat (+ a little tail), end the phase
             long lastBeat = beatTimes.get(beatTimes.size() - 1);
             if (pos >= lastBeat + 600) {
                 if (onPhaseComplete != null) onPhaseComplete.run();
-                return;   // stop the watcher
+                return;
             }
 
             updateRing(pos);
@@ -190,28 +217,7 @@ public class RhythmActivity extends AppCompatActivity {
     // ---------------- tapping / scoring ----------------
 
     private void onTap() {
-        if (!scoring || mediaPlayer == null) return;
-
-        playDrum();
-
-        long pos;
-        try { pos = mediaPlayer.getCurrentPosition(); }
-        catch (Exception e) { return; }
-
-        int nearest = -1;
-        long bestDist = Long.MAX_VALUE;
-        for (int i = 0; i < beatTimes.size(); i++) {
-            if (beatScored[i]) continue;
-            long d = Math.abs(beatTimes.get(i) - pos);
-            if (d < bestDist) { bestDist = d; nearest = i; }
-        }
-        if (nearest < 0) return;
-
-        if (bestDist <= RING_LEAD) {
-            beatScored[nearest] = true;
-            offsets.add(bestDist);
-            showTapFeedback(bestDist);
-        }
+        onHardwareTap();
     }
 
     private void showTapFeedback(long offset) {
@@ -226,6 +232,7 @@ public class RhythmActivity extends AppCompatActivity {
     // ---------------- result ----------------
 
     private void finishSession() {
+        ESPBluetoothManager.getInstance().sendRhythmModeOff();
         stopTrack();
         phase = Phase.DONE;
         scoring = false;
@@ -269,8 +276,33 @@ public class RhythmActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        ESPBluetoothManager.getInstance().sendRhythmModeOff();
         handler.removeCallbacksAndMessages(null);
         stopTrack();
         if (soundPool != null) soundPool.release();
     }
+
+    private void onHardwareTap() {
+        if (!scoring || mediaPlayer == null) return;
+
+        playDrum();
+
+        long pos = System.currentTimeMillis() - playbackStartRealtimeMs;
+
+        int nearest = -1;
+        long bestDist = Long.MAX_VALUE;
+        for (int i = 0; i < beatTimes.size(); i++) {
+            if (beatScored[i]) continue;
+            long d = Math.abs(beatTimes.get(i) - pos);
+            if (d < bestDist) { bestDist = d; nearest = i; }
+        }
+        if (nearest < 0) return;
+
+        if (bestDist <= RING_LEAD) {
+            beatScored[nearest] = true;
+            offsets.add(bestDist);
+            showTapFeedback(bestDist);
+        }
+    }
 }
+

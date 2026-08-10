@@ -21,6 +21,10 @@ public class ModeSelectActivity extends AppCompatActivity {
         findViewById(R.id.cardFatigue).setOnClickListener(v ->
                 startActivity(new Intent(this, FatigueCategoryActivity.class)));
 
+        findViewById(R.id.cardSimonSays).setOnClickListener(v ->
+                startActivity(new Intent(this, SimonSaysActivity.class)));
+
+
         findViewById(R.id.btnBackHome).setOnClickListener(v -> finish());
     }
 }

@@ -1,5 +1,7 @@
 package com.team5.reflextrainer.hardware;
 
+import static androidx.core.app.PendingIntentCompat.send;
+
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -162,5 +164,26 @@ public class ESPBluetoothManager {
         }
     }
 
+    public void sendResetBlocking() {
+        if (outputStream == null) return;
+        try {
+            outputStream.write(SensorMessage.buildReset());
+            outputStream.flush();
+        } catch (IOException e) {
+            Log.e(TAG, "Reset write failed", e);
+        }
+    }
+
+    public void sendRhythmModeOn() {
+        send(SensorMessage.buildRhythmModeOn());
+    }
+
+    public void sendRhythmModeOff() {
+        send(SensorMessage.buildRhythmModeOff());
+    }
+
+    public void sendStartSimon(byte[] sequence) {
+        send(SensorMessage.buildStartSimon(sequence));
+    }
 }
 

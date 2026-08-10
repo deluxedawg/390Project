@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         startTraining.setOnClickListener(v ->
                 startActivity(new Intent(this, ModeSelectActivity.class)));
 
-        // NEW from teammate
+
         View viewHistory = findViewById(R.id.btnViewHistory);
         viewHistory.setOnClickListener(v ->
                 startActivity(new Intent(this, HistoryActivity.class)));
@@ -134,7 +134,6 @@ public class MainActivity extends AppCompatActivity implements ESPBluetoothManag
         profile.setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class)));
 
-        // NEW from teammate
         View challenges = findViewById(R.id.btnChallenges);
         challenges.setOnClickListener(v ->
                 startActivity(new Intent(this, ChallengesActivity.class)));

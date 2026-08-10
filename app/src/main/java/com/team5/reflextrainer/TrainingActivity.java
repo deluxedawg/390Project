@@ -23,7 +23,7 @@ import java.util.Random;
 public class TrainingActivity extends AppCompatActivity implements ESPBluetoothManager.Listener {
 
     // ===== TEMP: tap-to-react instead of the physical sensor =====
-    private static final boolean SIMULATION_MODE = true;
+    private static final boolean SIMULATION_MODE = false;
 
     private TextView tvInstruction, tvResult, tvProgress;
     private Button btnStartRound;
@@ -162,6 +162,11 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
     }
 
     private void finishSession() {
+        if(!SIMULATION_MODE) {
+            ESPBluetoothManager.getInstance().sendResetBlocking();
+        }
+
+        try { Thread.sleep(50); } catch (InterruptedException ignored) {}
         int bestCalc = Integer.MAX_VALUE;
         int sum = 0;
         for (int t : reactionTimes) {
@@ -274,13 +279,12 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
     // ===================== real sensor =====================
 
     private byte pickRandomTarget() {
-        int roll = random.nextInt(12);
+        int roll = random.nextInt(11);
         if (roll == 0) return SensorMessage.TARGET_SHAKE_IMU;
         if (roll == 1) return SensorMessage.TARGET_JOY_UP;
         if (roll == 2) return SensorMessage.TARGET_JOY_DOWN;
         if (roll == 3) return SensorMessage.TARGET_JOY_LEFT;
         if (roll == 4) return SensorMessage.TARGET_JOY_RIGHT;
-        if (roll == 5) return SensorMessage.TARGET_ULTRASONIC;
         return (byte) random.nextInt(NUM_TARGETS);
     }
 
@@ -330,5 +334,8 @@ public class TrainingActivity extends AppCompatActivity implements ESPBluetoothM
     protected void onDestroy() {
         super.onDestroy();
         mainhandler.removeCallbacksAndMessages(null);
+        if (!SIMULATION_MODE) {
+            ESPBluetoothManager.getInstance().sendReset();
+        }
     }
 }

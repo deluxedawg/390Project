@@ -43,6 +43,12 @@ public class SensorMessage {
     public static final byte TARGET_JOY_LEFT   = (byte) 0xFD;
     public static final byte TARGET_JOY_RIGHT  = (byte) 0xF9;
 
+    public static final byte RESP_BUTTON_PRESS = (byte) 0x84;
+    public static final byte CMD_RHYTHM_MODE_ON  = 0x05;
+    public static final byte CMD_RHYTHM_MODE_OFF = 0x06;
+
+    public static final byte MSG_START_SIMON = 0x04;
+    public static final byte RESP_SIMON_PROGRESS = (byte) 0x83;
     private SensorMessage(byte response, byte targetId, int reactionTimeMs) {
         this.response = response;
         this.targetId = targetId;
@@ -61,6 +67,22 @@ public class SensorMessage {
         if (bytes[0] != START_BYTE) return null;
 
         byte response = bytes[1];
+
+        if (response == RESP_BUTTON_PRESS && bytes.length == 4) {
+            byte buttonIdx = bytes[2];
+            byte checksum = bytes[3];
+            byte computed = (byte) (response ^ buttonIdx);
+            if (computed != checksum) return null;
+            return new SensorMessage(response, buttonIdx, -1);
+        }
+
+        if (response == RESP_SIMON_PROGRESS && bytes.length == 4) {
+            byte stepIndex = bytes[2];
+            byte checksum = bytes[3];
+            byte computed = (byte) (response ^ stepIndex);
+            if (computed != checksum) return null;
+            return new SensorMessage(response, stepIndex, -1);
+        }
 
         if (response == RESP_ACK && bytes.length == 4) {
             byte targetId = bytes[2];
@@ -113,5 +135,30 @@ public class SensorMessage {
      */
     private static byte computeChecksum( byte b1, byte b2, byte b3, byte b4) {
         return (byte) (b1 ^ b2 ^ b3 ^ b4);
+    }
+
+    public static byte[] buildRhythmModeOn() {
+        byte checksum = (byte) CMD_RHYTHM_MODE_ON;
+        return new byte[]{ START_BYTE, CMD_RHYTHM_MODE_ON, checksum };
+    }
+
+    public static byte[] buildRhythmModeOff() {
+        byte checksum = (byte) CMD_RHYTHM_MODE_OFF;
+        return new byte[]{ START_BYTE, CMD_RHYTHM_MODE_OFF, checksum };
+    }
+
+    public static byte[] buildStartSimon(byte[] sequence) {
+        byte length = (byte) sequence.length;
+        byte[] frame = new byte[3 + sequence.length + 1];
+        frame[0] = START_BYTE;
+        frame[1] = MSG_START_SIMON;
+        frame[2] = length;
+        byte checksum = (byte) (MSG_START_SIMON ^ length);
+        for (int i = 0; i < sequence.length; i++) {
+            frame[3 + i] = sequence[i];
+            checksum ^= sequence[i];
+        }
+        frame[frame.length - 1] = checksum;
+        return frame;
     }
 }
